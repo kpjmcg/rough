@@ -34,6 +34,4 @@ d = { 'settings': { 'allowed_cell_metadata_keys': '',
                 'version': '0.0.1'},
   'syms': { 'rough\\data': {'rough\\data.foo': 'https://kpjmcg.github.io/rough/rough\\data.html#foo'},
             'rough\\profile': { 'rough\\profile.Ra': 'https://kpjmcg.github.io/rough/rough\\profile.html#ra',
-                                'rough\\profile.Rms': 'https://kpjmcg.github.io/rough/rough\\profile.html#rms',
-                                'rough\\profile.fasty': 'https://kpjmcg.github.io/rough/rough\\profile.html#fasty',
-                                'rough\\profile.test_function': 'https://kpjmcg.github.io/rough/rough\\profile.html#test_function'}}}
+                                'rough\\profile.Rms': 'https://kpjmcg.github.io/rough/rough\\profile.html#rms'}}}
