@@ -12,7 +12,7 @@ def Sa(im, #Numpy array or arraylike
        norm = True #Normalize the section by subtracting the mean
       ):
     '''
-    Calculates the mean absolute difference from the mean plane. Equivalent to Ra(array, axis = 0)
+    Calculates the mean absolute difference from the mean plane. Equivalent to Ra(array, axis = None)
     '''
     if norm:
         im = im - np.mean(im, axis = None)
