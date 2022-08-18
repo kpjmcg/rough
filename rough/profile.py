@@ -5,28 +5,28 @@ __all__ = ['Ra', 'Rms']
 
 # %% ..\01_profile.ipynb 4
 import numpy as np
-from PIL import Image  
+from .data import *
 
 # %% ..\01_profile.ipynb 5
 def Ra(im, #Numpy array or arraylike
-       axis = 0, 
+       axis = 1, #Default to Ra of rows
        norm = True #Normalize the profile by subtracting the mean 
       ):
     '''
     Calculates Mean Absolute Roughness (Ra) along given axis. Defined as the average deviation of absolute height values from the mean line.
     '''
     if norm:
-        im = im - np.mean(im, axis = axis)
+        im = im - np.mean(im, axis = axis, keepdims = True)
     return np.mean(np.absolute(im), axis = axis)
 
-# %% ..\01_profile.ipynb 8
+# %% ..\01_profile.ipynb 6
 def Rms(im, #Numpy array or array like
-        axis = 0, 
+        axis = 1, #Default to Rms of rows
         norm = True #Normalize the profile by subtracting the mean
        ):
     '''
     Calculates Root Mean Square Roughness (Rms) along given axis. Defined as the root mean square of deviations of height from the mean line of a given profile. 
     '''
     if norm:
-        im = im - np.mean(im, axis = axis)
+        im = im - np.mean(im, axis = axis, keepdims = True)
     return np.sqrt(np.mean(np.square(im), axis = axis))

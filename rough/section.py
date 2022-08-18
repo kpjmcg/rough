@@ -4,9 +4,16 @@
 __all__ = ['Sa']
 
 # %% ..\02_section.ipynb 3
+from .data import *
+from .profile import *
+
+# %% ..\02_section.ipynb 4
 def Sa(im, #Numpy array or arraylike
        norm = True #Normalize the section by subtracting the mean
       ):
+    '''
+    Calculates the mean absolute difference from the mean plane. Equivalent to Ra(array, axis = 0)
+    '''
     if norm:
         im = im - np.mean(im, axis = None)
     return np.mean(np.absolute(im), axis = None)
