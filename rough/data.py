@@ -3,14 +3,14 @@
 # %% auto 0
 __all__ = ['gen_rot_prof', 'level_data', 'gen_sections']
 
-# %% ..\00_data.ipynb 4
+# %% ..\00_data.ipynb 5
 import numpy as np
 import imutils
 import cv2 as cv
 from matplotlib import pyplot as plt
 import scipy.ndimage as ndimage 
 
-# %% ..\00_data.ipynb 12
+# %% ..\00_data.ipynb 13
 def gen_rot_prof(array, #2D array of height values
                      deg = 180, #Number of degrees to rotate through, i.e 180 gives full 360 rotation
                      increment = 1 # indent/180 = number of evenly spaced profiles to calculate.  
@@ -30,11 +30,11 @@ def gen_rot_prof(array, #2D array of height values
     return profiles
             
 
-# %% ..\00_data.ipynb 13
+# %% ..\00_data.ipynb 14
 def level_data(array, axis = None):
     pass
 
-# %% ..\00_data.ipynb 15
+# %% ..\00_data.ipynb 20
 def gen_sections(array #2D array (or arraylike) of height values
                 ):
     pass

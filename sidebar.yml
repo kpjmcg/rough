@@ -4,6 +4,8 @@ website:
       - index.ipynb
       - 00_data.ipynb
       - 01_profile.ipynb
+      - 02_section.ipynb
+      - 03_examples.ipynb
               - section: idlelib
                 contents:
                   - env\Lib\idlelib\help.html
@@ -34,6 +36,12 @@ website:
                           - env\Lib\site-packages\jupyterlab_server\templates\index.html
                           - env\Lib\site-packages\jupyterlab_server\templates\403.html
                           - env\Lib\site-packages\jupyterlab_server\templates\error.html
+                          - section: web_backend
+                            contents:
+                              - env\Lib\site-packages\matplotlib\backends\web_backend\all_figures.html
+                              - env\Lib\site-packages\matplotlib\backends\web_backend\ipython_inline_figure.html
+                              - env\Lib\site-packages\matplotlib\backends\web_backend\nbagg_uat.ipynb
+                              - env\Lib\site-packages\matplotlib\backends\web_backend\single_figure.html
                           - section: files
                             contents:
                               - env\Lib\site-packages\nbclient\tests\files\Autokill.ipynb
