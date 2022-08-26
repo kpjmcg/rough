@@ -12,7 +12,7 @@ from scipy.signal import find_peaks
 from .data import *
 
 
-# %% ..\01_profile.ipynb 7
+# %% ..\01_profile.ipynb 8
 def Ra(im, #Numpy array or arraylike
        axis = 1, #Default to Ra of rows
        norm = True #Normalize the profile by subtracting the mean 
@@ -24,7 +24,7 @@ def Ra(im, #Numpy array or arraylike
         im = im - np.mean(im, axis = axis, keepdims = True)
     return np.mean(np.absolute(im), axis = axis)
 
-# %% ..\01_profile.ipynb 9
+# %% ..\01_profile.ipynb 12
 def Rms(im, #Numpy array or array like
         axis = 1, #Default to Rms of rows
         norm = True #Normalize the profile by subtracting the mean
@@ -36,7 +36,7 @@ def Rms(im, #Numpy array or array like
         im = im - np.mean(im, axis = axis, keepdims = True)
     return np.sqrt(np.mean(np.square(im), axis = axis))
 
-# %% ..\01_profile.ipynb 11
+# %% ..\01_profile.ipynb 14
 def Rsk(im, #Numpy array or array like
          axis = 1, #Default to Skew of rows
          norm = True, #Normalize the profile by subtracting the mean
@@ -49,7 +49,7 @@ def Rsk(im, #Numpy array or array like
         im = im - np.mean(im, axis=axis, keepdims=True)
     return skew(a = im, axis=axis, **kwargs)
 
-# %% ..\01_profile.ipynb 13
+# %% ..\01_profile.ipynb 16
 def Rku(im, #Numpy array or array like
        axis = 1, #Default to Kurtosis of rows
        norm= True, #Normalize the profile by subtracting the mean
