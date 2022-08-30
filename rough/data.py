@@ -14,7 +14,7 @@ import sklearn.preprocessing
 import sklearn.linear_model
 from mpl_toolkits import mplot3d
 
-# %% ..\00_data.ipynb 17
+# %% ..\00_data.ipynb 14
 def gen_rot_prof(array, #2D array of height values
                      deg = 180, #Number of degrees to rotate through, i.e 180 gives full 360 rotation
                      increment = 1 # indent/180 = number of evenly spaced profiles to calculate.  
@@ -34,7 +34,7 @@ def gen_rot_prof(array, #2D array of height values
     return profiles
             
 
-# %% ..\00_data.ipynb 19
+# %% ..\00_data.ipynb 16
 def image2xyz(im):
     '''
     Converts 2D (m,n) image/array to xyz coordinates. Used for plane levelling
@@ -46,7 +46,7 @@ def image2xyz(im):
     
     return xyz
 
-# %% ..\00_data.ipynb 20
+# %% ..\00_data.ipynb 17
 def xyz2image(xyz, # (n,3) shape array 
              ):
     '''
@@ -57,7 +57,7 @@ def xyz2image(xyz, # (n,3) shape array
               
 
 
-# %% ..\00_data.ipynb 23
+# %% ..\00_data.ipynb 20
 def remove_form(im, # 2D Numpy array or array like
                degree = 3, # Polynomial degree to remove
                return_form = False # Return the form/computed polynomial values instead of removing them from im
@@ -84,7 +84,7 @@ def remove_form(im, # 2D Numpy array or array like
         return im - form
     
 
-# %% ..\00_data.ipynb 24
+# %% ..\00_data.ipynb 21
 def plane_level(im, #Numpy array or array like
                 norm = True, #Normalize the data by subtracting the mean
                 return_form = False
@@ -98,7 +98,7 @@ def plane_level(im, #Numpy array or array like
         
     return remove_form(im = im, degree = 1, return_form = return_form)
 
-# %% ..\00_data.ipynb 30
+# %% ..\00_data.ipynb 27
 def smooth_image(array, #Numpy array or array like
                  sigma = 1, #Standard deviation for gaussian kernel Useful for determining the wavelength of the low pass filter
                  **kwargs #Keyword arguments for modification of the gaussian_filter function
@@ -109,8 +109,36 @@ def smooth_image(array, #Numpy array or array like
     '''
     return ndimage.gaussian_filter(input = array, sigma = sigma, **kwargs)
 
-# %% ..\00_data.ipynb 32
-def gen_sections(array #2D array (or arraylike) of height values
+# %% ..\00_data.ipynb 29
+def gen_sections(image, #2D array (or arraylike) of height values
+                how = 'square', #How to subdivide the array, options are: 'square', 'row', 'column'
+                number = 100, #Number of sections to produce
+                
                 ):
-    pass
+    '''
+    Generates sections of the array, either in equal, horizontal sections or vertical sections.
+    useful for studying the change of parameters over the surface.
+    Mostly wraps around np.array_split, np.hsplit and np.dsplit.
+    Note, if 'number' does not divide into the array evenly, the bottom/side remains will not be
+    included. 
+    '''
+   
+    if how == 'square':
+        row, col = image.shape
+        length   = number**0.5
+        roww     = int(row//length)
+        colw     = int(col//length) 
+        
+        sections = []
+        for i in range(0, row - (row % roww), roww):
+            for j in range(0, col - (col % colw), colw):
+                sections.append(image[i:i+roww,j:j+colw])
+        return np.array(sections)
+    if how == 'row':
+        return np.vsplit(image, number)
+    
+    if how == 'column':
+        return np.hsplit(image, number)
+                
+        
                  
