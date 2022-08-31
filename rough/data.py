@@ -16,21 +16,24 @@ from mpl_toolkits import mplot3d
 
 # %% ..\00_data.ipynb 14
 def gen_rot_prof(array, #2D array of height values
-                     deg = 180, #Number of degrees to rotate through, i.e 180 gives full 360 rotation
-                     increment = 1 # indent/180 = number of evenly spaced profiles to calculate.  
-                    ):
+                 deg       = 180, #Number of degrees to rotate through, i.e 180 gives full 360 rotation
+                 increment = 1 # indent/180 = number of evenly spaced profiles to calculate.  
+                ):
+    
     ''' Generates an array of rotational profiles through to deg, in even increments of increment. 
     Uses OpenCV and Imutils to rotate the array around the center of the array/raster/image, extracts the middle row. 
     '''
     if deg % increment != 0:
         raise ValueError('Cannot sample evenly, deg % indent must = 0')
+        
     profiles = np.zeros(shape = (deg//increment,array.shape[0]))
-    index = 0
-    center = array.shape[0]//2  #Center is returned as index to the right of center for even arrays
+    index    = 0
+    center   = array.shape[0]//2  #Center is returned as index to the right of center for even arrays
+    
     for degree in range(0, deg, increment):
-        rot_array = imutils.rotate(array, angle = degree)
+        rot_array          = imutils.rotate(array, angle = degree)
         profiles[index, :] = rot_array[center,:]
-        index += 1
+        index             += 1
     return profiles
             
 
@@ -52,7 +55,8 @@ def xyz2image(xyz, # (n,3) shape array
     '''
     Helper to convert back from xyz (n,3) arrays to (M,N) image/matrices
     '''
-    return xyz[:,2].reshape(np.max(xyz[:,1])+1,np.max(xyz[:,0]) + 1)
+    return xyz[:,2].reshape(np.max(xyz[:,1]) + 1,
+                            np.max(xyz[:,0]) + 1)
 
               
 
@@ -116,12 +120,14 @@ def gen_sections(image, #2D array (or arraylike) of height values
                 
                 ):
     '''
-    Generates sections of the array, either in equal, horizontal sections or vertical sections.
-    useful for studying the change of parameters over the surface.
-    Mostly wraps around np.array_split, np.hsplit and np.dsplit.
+    Generates sections of the array/image, either in square, horizontal, or vertical sections.
+    Useful for studying the change of parameters over the surface.
+    Mostly wraps around np.hsplit and np.vsplit.
     Note, if 'number' does not divide into the array evenly, the bottom/side remains will not be
     included. 
     '''
+    if how not in ['square','row','column']:
+        raise ValueError('Invalid how, expected one of:')
    
     if how == 'square':
         row, col = image.shape
@@ -130,7 +136,7 @@ def gen_sections(image, #2D array (or arraylike) of height values
         colw     = int(col//length) 
         
         sections = []
-        for i in range(0, row - (row % roww), roww):
+        for i in range(0, row - (row % roww), roww): #TODO: speed this up 
             for j in range(0, col - (col % colw), colw):
                 sections.append(image[i:i+roww,j:j+colw])
         return np.array(sections)
@@ -139,6 +145,3 @@ def gen_sections(image, #2D array (or arraylike) of height values
     
     if how == 'column':
         return np.hsplit(image, number)
-                
-        
-                 

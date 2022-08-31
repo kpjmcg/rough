@@ -49,4 +49,6 @@ d = { 'settings': { 'allowed_cell_metadata_keys': '',
                                 'rough\\profile.Rms': 'https://kpjmcg.github.io/rough/rough\\profile.html#rms',
                                 'rough\\profile.Rsk': 'https://kpjmcg.github.io/rough/rough\\profile.html#rsk'},
             'rough\\section': { 'rough\\section.Sa': 'https://kpjmcg.github.io/rough/rough\\section.html#sa',
-                                'rough\\section.Sms': 'https://kpjmcg.github.io/rough/rough\\section.html#sms'}}}
+                                'rough\\section.Sku': 'https://kpjmcg.github.io/rough/rough\\section.html#sku',
+                                'rough\\section.Sms': 'https://kpjmcg.github.io/rough/rough\\section.html#sms',
+                                'rough\\section.Ssk': 'https://kpjmcg.github.io/rough/rough\\section.html#ssk'}}}
