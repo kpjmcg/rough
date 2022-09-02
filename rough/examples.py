@@ -7,7 +7,10 @@ __all__ = []
 import numpy as np
 import imutils
 import cv2 as cv
+
 from matplotlib import pyplot as plt
+
 from nbdev.showdoc import *
-from .profile import *
 from .data import *
+from .profile import *
+from .section import *
