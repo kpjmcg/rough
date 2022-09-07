@@ -6,45 +6,67 @@ __all__ = ['rough']
 # %% ..\04_cli.ipynb 4
 @call_parse
 def rough(
-    fname:str   = None, # File name or glob to be read
-    delim:str   = '', #Delimeter for the file '' for txt, ',' for .csv etc.
-    result:str  = None, #Folder to write results to, if not set, writes to 'results' folder
+    fname:str   = None,   #File name, path or directory with data files to be read
+    ext:str     = '.txt', #Extension for the  files .txt or .csv
+    result:str  = None,   #Directory to write results to, if None, writes to 'results' 
     
     level:bool  = True, #Perform plane levelling 
     form:bool   = True, #Remove form by polynomial subtraction
-    deg:int     = 3, #Degree of polynomial to remove
+    deg:int     = 3,    #Degree of polynomial to remove
     smooth:bool = True, #Smooth the array by applying a gaussian
-    sigma:int   = 1, #Sigma for gaussian to be applied
+    sigma:int   = 1,    #Sigma for gaussian to be applied
     
     gen_rot:bool= True, #Generate rotational profiles and apply parameter calculation to them
     
-    section:bool= True, #Generate sections
+    section:bool= True,     #Generate sections
     sec_how:str = 'square', #Type of section to generate, currently only supports 'square'
-    sec_num:int = 100, #Number of sections to generate
+    sec_num:int = 100,      #Number of sections to generate
     
     params1D:list = [Ra,Rms,Rku,Rsk], # list of 1D parameters to calculate,
-    params2D:list = [Sa,Sms,Sku,Ssk] #list of 2D parameters to calculate
+    params2D:list = [Sa,Sms,Sku,Ssk], #list of 2D parameters to calculate
 ):
-    for file in fname:
-        array = np.loadtxt(fname,delimeter=delim)
+    
+    delims = {'.txt': None,
+              '.csv': ','}
+    
+    path       = Path().cwd() if fname == None else Path(fname)
+    
+    #Figuring out where the results go
+    if   path.is_dir():
+        result_dir = path / 'results' if result == None else result
+    elif path.is_file():
+        result_dir = path.parent / 'results' if result == None else result # 
+    
+
+    if not path.exists(): 
+        raise FileNotFoundError('Could not find file/directory check fname')
+    if not result_dir.exists(): 
+        result_dir.mkdir(Parents=True) #Make the results directory if it doesn't exist
         
+    glob_pattern    = '*' + ext
+    file_paths = [path] if path.is_file() else path.glob(glob_pattern)
+    
+    for file_path in file_paths:
+        array = np.loadtxt(file_path,delimiter=delims[file_path.suffix])
+        print(file_path)
         if level:
             array = plane_level(array)
+            print('Got to level')
         if form:
             array = remove_form(array)
+            print('Got to form')
         if smooth:
             array = smooth_image(array,sigma=sigma)
+            print('got to smooth')
         if gen_rot:
-            profiles = gen_rot_profs(array)
+            profiles = gen_rot_prof(array)
+            print('got to profiles')
             #Helper function that computes parameters
         if section:
             sections = gen_sections(array, how=sec_how, number = sec_num)
             #Helper function that computes parameters
             section_results = None
-            result_f = result + '/' + file + '_section' + ('.csv' if delim == ',' else '.txt')
-            np.savetxt(result_f, section_results, delim =delim) #Save the section results
-        
-        
-        
-        
-
+            result_file_name = file_path.stem + '_section' + file_path.suffix #TODO add in .csv and other filer support
+            result_path = result_dir / result_file_name 
+            print(result_path)
+            #np.savetxt(result_path, section_results, delim =delim) #Save the section results
