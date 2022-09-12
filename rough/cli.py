@@ -6,8 +6,8 @@ __all__ = ['compute_parameters', 'rough']
 # %% ..\04_cli.ipynb 3
 from fastcore.script import *
 import numpy as np
+import pandas as pd
 from pathlib import Path
-from inspect import getmembers, isfunction
 
 from .data import *
 from .profile import *
@@ -16,23 +16,30 @@ from .section import *
 import rough.profile as profile_mod
 import rough.section as section_mod
 
-# %% ..\04_cli.ipynb 7
+# %% ..\04_cli.ipynb 5
 def compute_parameters(array, #Input array to be calculate paramers on
-                       list_of_parameters:list, #List of parameters to calculate as strings
+                       parameter_list:list, #List of parameters to calculate as strings
                        valid_module  = None, #module to generate functions from, used to check user input, see rough.cli:rough
-                       **kwargs #Keyword arguments to modify behavior of parameter calls, usually to define Sections = True
+                       to_df:bool = False, #Return the parameters as a pandas dataframe, with columns set as the parameter names
+                       **kwargs #Keyword arguments to modify behavior of parameter calls, usually to define sections = True
                       ):
     
     results = []
     
     #The following generates a {'func':func} dict from given list of parameters if the parameter is available in the module
     valid_dict = {k: v for k, v in vars(valid_module).items() if callable(v) and k in valid_module.__all__}
-    for parameter in list_of_parameters:
-        result = valid_dict[parameter](array, kwargs)
+    for parameter in parameter_list:
+        result = valid_dict[parameter](array, **kwargs)
         results.append(result)
-    return results
+        
+    if to_df:
+        results_array = np.array(results)
+        if len(results_array.shape) == 1: results_array = np.expand_dims(results_array, axis=1) #Fix for when only 1 section is being calculated
+        return pd.DataFrame(data = results_array.T, columns = parameter_list)
+    else:
+        return results
 
-# %% ..\04_cli.ipynb 8
+# %% ..\04_cli.ipynb 13
 @call_parse
 def rough(
     fname:str   = None,   #File name, path or directory with data files to be read
@@ -61,18 +68,20 @@ def rough(
     params1D:list = profile_mod.__all__, # list of 1D parameters to calculate,
     params2D:list = section_mod.__all__, #list of 2D parameters to calculate, calculates for both the sections and the whole
 ):
+    '''
+    This is intended to be the primary method used from the command line.
+    '''
     
     delims = {'.txt': None,
               '.csv': ','}
     
     path       = Path().cwd() if fname == None else Path(fname)
     
-    #Figuring out where the results go
+    #Figuring out where the file/s are and results go
     if   path.is_dir():
         result_dir = path / 'results' if result == None else Path(result)
     elif path.is_file():
         result_dir = path.parent / 'results' if result == None else Path(result) 
-    
 
     if not path.exists(): 
         raise FileNotFoundError('Could not find file/directory check fname')
@@ -82,10 +91,17 @@ def rough(
     glob_pattern    = '*' + ext
     file_paths = [path] if path.is_file() else path.glob(glob_pattern)
     
+    if result_how == 'concat': 
+        profile_result_list = []
+        rot_profile_result_list = []
+        section_result_list = []
+        sections_result_list = []
+    
     for file_path in file_paths:
         array = np.loadtxt(file_path,delimiter=delims[file_path.suffix])
         print(file_path)
         
+        #--------------Data Cleaning-------------------------
         if level:
             array = plane_level(array)
             print('Got to level')
@@ -95,19 +111,29 @@ def rough(
         if smooth:
             array = smooth_image(array,sigma=sigma)
             print('got to smooth')
-        
-        if profile: #Iterate through the profile parameters
-            profile_results = compute_parameters(array, params1D, profile_mod)
+            
+        #-------------Parameter Calculation------------------
+        if profile:
+            profile_results = compute_parameters(array, params1D, profile_mod, to_df = True)
+            
+            if result_how == 'concat':
+                result_list.append(profile_results)
             if gen_rot:
                 profiles = gen_rot_prof(array)
-                rot_profile_results = compute_parameters(profiles, params1D, profile_mod)
+                rot_profile_results = compute_parameters(profiles, params1D, profile_mod, to_df = True)
+                
+                if result_how == 'concat':
+                    rot_profile_result_list.append(rot_profile_results)
         
-        if section: #Iterate through profile parameters
+        if section:
             section_results = compute_parameters(array, params2D, section_mod)
+            
+            if result_how == 'concat':
+                section_result_list.append(section_results)
             
             if gen_section:
                 sections         = gen_sections(array, how=sec_how, number = sec_num)
-                sections_results = compute_parameters(sections, params2D, section_mod, sections = True)
+                sections_results = compute_parameters(sections, params2D, section_mod, sections = True, to_df = True)
 
                 result_file_name = file_path.stem + '_section' + file_path.suffix #TODO add in .csv and other filer support
                 result_path = result_dir / result_file_name 
