@@ -18,11 +18,15 @@ import rough.section as section_mod
 
 # %% ..\04_cli.ipynb 5
 def compute_parameters(array, #Input array to be calculate paramers on
-                       parameter_list:list, #List of parameters to calculate as strings
+                       parameter_list:list,  #List of parameters to calculate as strings
                        valid_module  = None, #module to generate functions from, used to check user input, see rough.cli:rough
-                       to_df:bool = False, #Return the parameters as a pandas dataframe, with columns set as the parameter names
-                       **kwargs #Keyword arguments to modify behavior of parameter calls, usually to define sections = True
+                       to_df:bool    = False,#Return the parameters as a pandas dataframe, with columns set as the parameter names
+                       **kwargs              #Keyword arguments to modify behavior of parameter calls, usually to define sections = True
                       ):
+    '''
+    computes a set of parameters, provide a list of parameters (as strings of their respective functions e.g. ['Ra','Rms']) and a module
+    to verify against (might require some module aliasing, see CLI notebook for example use). Returns a list of results or a dataframe.
+    '''
     
     results = []
     
@@ -39,7 +43,7 @@ def compute_parameters(array, #Input array to be calculate paramers on
     else:
         return results
 
-# %% ..\04_cli.ipynb 13
+# %% ..\04_cli.ipynb 15
 @call_parse
 def rough(
     fname:str   = None,   #File name, path or directory with data files to be read
@@ -75,7 +79,7 @@ def rough(
     delims = {'.txt': None,
               '.csv': ','}
     
-    path       = Path().cwd() if fname == None else Path(fname)
+    path = Path().cwd() if fname == None else Path(fname)
     
     #Figuring out where the file/s are and results go
     if   path.is_dir():
@@ -117,25 +121,65 @@ def rough(
             profile_results = compute_parameters(array, params1D, profile_mod, to_df = True)
             
             if result_how == 'concat':
-                result_list.append(profile_results)
+                profile_results.insert(loc = 0, column = 'id', value = file_path.stem)
+                profile_result_list.append(profile_results)
             if gen_rot:
                 profiles = gen_rot_prof(array)
                 rot_profile_results = compute_parameters(profiles, params1D, profile_mod, to_df = True)
                 
                 if result_how == 'concat':
+                    rot_profile_results.insert(loc = 0, column = 'id', value = file_path.stem)
                     rot_profile_result_list.append(rot_profile_results)
         
         if section:
             section_results = compute_parameters(array, params2D, section_mod)
             
             if result_how == 'concat':
+                section_results.insert(loc = 0, column = 'id', value = file_path.stem)
                 section_result_list.append(section_results)
             
             if gen_section:
                 sections         = gen_sections(array, how=sec_how, number = sec_num)
                 sections_results = compute_parameters(sections, params2D, section_mod, sections = True, to_df = True)
-
-                result_file_name = file_path.stem + '_section' + file_path.suffix #TODO add in .csv and other filer support
-                result_path = result_dir / result_file_name 
-                print(result_path)
-            #np.savetxt(result_path, section_results, delim =delim) #Save the section results
+                
+                if result_how == 'concat':
+                    sections_results.insert(loc = 0, column = 'id', value = file_path.stem)
+                    sections_result_list.append(sections_results)
+    #-----------Data saving----------------------
+        if result_how == 'split':
+            #TODO: figure out how to make this into a loop
+            if profile:
+                profile_file_name  = file_path.stem +'_profile.csv'
+                result_path = result_dir / profile_file_name
+                profile_results.to_csv(result_path)
+                
+            if gen_rot:
+                rot_file_name      = file_path.stem + '_rotprofile.csv'
+                result_path = result_dir / rot_file_name
+                rot_profile_results.to_csv(result_path)
+            if section:
+                section_file_name  = file_path.stem + '_section.csv'
+                result_path = result_dir / section_file_name
+                section_results.to_csv(result_path)
+            if gen_section:
+                sections_file_name = file_path.stem + '_sections.csv'
+                result_path = result_dir / section_file_name
+                sections_results.to_csv(result_path)
+            
+    if result_how == 'concat':
+        if profile:
+            result_path = result_dir / 'profile.csv'
+            results = pd.concat(profile_result_list)
+            results.to_csv(result_path)
+        if gen_rot:
+            result_path = result_dir / 'rotprofile.csv'
+            results = pd.concat(rot_profile_result_list)
+            results.to_csv(result_path)
+        if section:
+            result_path = result_dir / 'section.csv'
+            results = pd.concat(section_result_list)
+            results.to_csv(results_path)
+        if gen_section:
+            result_path = result_dir / 'sections.csv'
+            results = pd.concat(sections_result_list)
+            results.to_csv(results_path)
