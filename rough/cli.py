@@ -43,37 +43,35 @@ def compute_parameters(array, #Input array to be calculate paramers on
     else:
         return results
 
-# %% ..\04_cli.ipynb 15
+# %% ..\04_cli.ipynb 7
 @call_parse
 def rough(
     fname:str   = None,   #File name, path or directory with data files to be read
     ext:str     = '.txt', #Extension for the  files .txt or .csv
     
     result:str     = None,     #Directory to write results to, if None, writes to 'results'
-    result_how:str = 'concat', #How to save the results, 'concat' concatenates all respective types of results 
-                               #(i.e. profile,section,rotational,subsection) into one dataframe file.
-                               #'split' produces respective result files for each input file. Use split for large amounts of data.
+    result_how:str = 'concat', #How to save the results, 'concat' concatenates all respective types of results (i.e. profile,section,rotational,subsection) into one dataframe file. 'split' produces respective result files for each input file. Use split for large amounts of data.
     
-    level:bool  = True, #Perform plane levelling 
-    form:bool   = True, #Remove form by polynomial subtraction
-    deg:int     = 3,    #Degree of polynomial to remove
-    smooth:bool = True, #Smooth the array by applying a gaussian
-    sigma:int   = 1,    #Sigma for gaussian to be applied
+    level:Param("Perform plane levelling", bool_arg) = True, #Perform plane levelling 
+    form:Param("Remove form by polynomial subtraction", bool_arg) = True, #Remove form by polynomial subtraction
+    deg:int = 3, #Degree of polynomial to remove
+    smooth:Param("Smooth array by applying gaussian", bool_arg) = True, #Smooth the array by applying a gaussian
+    sigma:int = 1, #Sigma for gaussian to be applied
     
-    gen_rot:bool= True, #Generate rotational profiles and apply parameter calculation to them
+    gen_rot:Param("Generate rotational profiles and apply parameter calculation to them", bool_arg) = True, #Generate rotational profiles and apply parameter calculation to them
     
-    gen_section:bool= True, #Generate sub-sections of the surface
+    gen_section:Param("Generate sub-sections of the surface", bool_arg) = True, #Generate sub-sections of the surface
     sec_how:str = 'square', #Type of section to generate, currently only supports 'square'
     sec_num:int = 100,      #Number of sections to generate
     
-    profile:bool = True, #Calculate profile parameters
-    section:bool = True, #Calculate section parameters
+    profile:Param("Calculate profile parameters", bool_arg) = True, #Calculate profile parameters
+    section:Param("Calculate section parameters", bool_arg) = True, #Calculate section parameters
     
     params1D:list = profile_mod.__all__, # list of 1D parameters to calculate,
     params2D:list = section_mod.__all__, #list of 2D parameters to calculate, calculates for both the sections and the whole
 ):
     '''
-    This is intended to be the primary method used from the command line.
+    Perform parameter calculation on a given file or directory, if none is provided .
     '''
     
     delims = {'.txt': None,
@@ -104,6 +102,7 @@ def rough(
     for file_path in file_paths:
         array = np.loadtxt(file_path,delimiter=delims[file_path.suffix])
         print(file_path)
+        print('got to before data cleaning')
         
         #--------------Data Cleaning-------------------------
         if level:
@@ -132,7 +131,7 @@ def rough(
                     rot_profile_result_list.append(rot_profile_results)
         
         if section:
-            section_results = compute_parameters(array, params2D, section_mod)
+            section_results = compute_parameters(array, params2D, section_mod, to_df = True)
             
             if result_how == 'concat':
                 section_results.insert(loc = 0, column = 'id', value = file_path.stem)
@@ -165,21 +164,26 @@ def rough(
                 sections_file_name = file_path.stem + '_sections.csv'
                 result_path = result_dir / section_file_name
                 sections_results.to_csv(result_path)
+            print(f'Finished saving {file_path.stem} results') 
             
     if result_how == 'concat':
         if profile:
             result_path = result_dir / 'profile.csv'
             results = pd.concat(profile_result_list)
             results.to_csv(result_path)
+            print(f'Saved profile results to {result_path}')
         if gen_rot:
             result_path = result_dir / 'rotprofile.csv'
             results = pd.concat(rot_profile_result_list)
             results.to_csv(result_path)
+            print(f'Saved rotational profile results to {result_path}')
         if section:
             result_path = result_dir / 'section.csv'
             results = pd.concat(section_result_list)
-            results.to_csv(results_path)
+            results.to_csv(result_path)
+            print(f'Saved section results to {result_path}')
         if gen_section:
             result_path = result_dir / 'sections.csv'
             results = pd.concat(sections_result_list)
-            results.to_csv(results_path)
+            results.to_csv(result_path)
+            print(f'Saved sub-section results to {result_path}')
