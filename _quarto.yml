@@ -17,7 +17,7 @@ format:
 website:
   title: "rough"
   site-url: "https://kpjmcg.github.io/rough/"
-  description: "A package for the calculation of surface parameters (roughness). Built with nbdev"
+  description: "Calculate surface parameters (roughness). Built with nbdev"
   execute: 
     enabled: false
   twitter-card: true

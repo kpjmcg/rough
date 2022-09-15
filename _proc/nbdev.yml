@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "rough"
+  site-url: "https://kpjmcg.github.io/rough/"
+  description: "Calculate surface parameters (roughness). Built with nbdev"
+  repo-branch: main
+  repo-url: "https://github.com/kpjmcg/rough/"
