@@ -11,10 +11,10 @@ from pathlib import Path
 
 from .data import *
 from .profile import *
-from .section import *
+from .areal import *
 
 import rough.profile as profile_mod
-import rough.section as section_mod
+import rough.areal as areal_mod
 
 # %% ../04_cli.ipynb 5
 def compute_parameters(array, #Input array to be calculate paramers on
@@ -68,7 +68,7 @@ def rough(
     section:Param("Calculate section parameters", bool_arg) = True, #Calculate section parameters
     
     params1D:list = profile_mod.__all__, # list of 1D parameters to calculate,
-    params2D:list = section_mod.__all__, #list of 2D parameters to calculate, calculates for both the sections and the whole
+    params2D:list = areal_mod.__all__, #list of 2D parameters to calculate, calculates for both the sections and the whole
 ):
     '''
     Perform parameter calculation on a given file or directory, if none is provided .
@@ -131,7 +131,7 @@ def rough(
                     rot_profile_result_list.append(rot_profile_results)
         
         if section:
-            section_results = compute_parameters(array, params2D, section_mod, to_df = True)
+            section_results = compute_parameters(array, params2D, areal_mod, to_df = True)
             
             if result_how == 'concat':
                 section_results.insert(loc = 0, column = 'id', value = file_path.stem)
@@ -139,7 +139,7 @@ def rough(
             
             if gen_section:
                 sections         = gen_sections(array, how=sec_how, number = sec_num)
-                sections_results = compute_parameters(sections, params2D, section_mod, sections = True, to_df = True)
+                sections_results = compute_parameters(sections, params2D, areal_mod, sections = True, to_df = True)
                 
                 if result_how == 'concat':
                     sections_results.insert(loc = 0, column = 'id', value = file_path.stem)
