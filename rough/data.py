@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['gen_rot_prof', 'image2xyz', 'xyz2image', 'remove_form', 'plane_level', 'smooth_image', 'gen_sections',
-           'compute_parameters']
+           'compute_parameters', 'distance_matrix']
 
 # %% ../00_data.ipynb 5
 import numpy as np
@@ -148,14 +148,14 @@ def gen_sections(image, #2D array (or arraylike) of height values
         return np.hsplit(image, number)
 
 # %% ../00_data.ipynb 40
-def compute_parameters(array, #Input array to be calculate paramers on
+def compute_parameters(array, #Input array to be calculate parameters on
                        parameter_list:list,  #List of parameters to calculate as strings
                        valid_module  = None, #module to generate functions from, used to check user input, see rough.cli:rough
                        to_df:bool    = False,#Return the parameters as a pandas dataframe, with columns set as the parameter names
-                       **kwargs              #Keyword arguments to modify behavior of parameter calls, usually to define sections = True
+                       **kwargs              #Keyword arguments to modify behavior of parameter calls, usually to define sections = True or the axis. 
                       ):
     '''
-    Computes a set of parameters for a given , provide a list of parameters (as strings of their respective functions e.g. ['Ra','Rms']) and a module
+    Computes a set of parameters for a given array, provide a list of parameters (as strings of their respective functions e.g. ['Ra','Rms']) and a module
     to verify against (might require some module aliasing, see CLI notebook for example use). Returns a list of results or a dataframe.
     '''
     
@@ -173,3 +173,20 @@ def compute_parameters(array, #Input array to be calculate paramers on
         return pd.DataFrame(data = results_array.T, columns = parameter_list)
     else:
         return results
+
+# %% ../00_data.ipynb 41
+def distance_matrix(shape: (int,int), #Shape of array, used to calculate center if not given
+                    center: (int,int) = None, #Central point from which to calculate distances, if None, defaults to x//2, y//2
+                   ):
+    '''
+    Returns a (m,n) matrix containing distance values from center coordinates.
+    
+    '''
+    if center is None:
+        center = (shape[0]//2,shape[1]//2)
+        
+    y_arr, x_arr = np.mgrid[0:shape[0],0:shape[1]]
+    #Pythagoras
+    return np.sqrt(((y_arr - center[0])**2) + ((x_arr - center[1]) ** 2))
+        
+    
