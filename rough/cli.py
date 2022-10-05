@@ -40,8 +40,8 @@ def rough(
     profile:Param("Calculate profile parameters", bool_arg) = True, #Calculate profile parameters
     section:Param("Calculate section parameters", bool_arg) = True, #Calculate section parameters
     
-    params1D:list = profile_mod.__all__, # list of 1D parameters to calculate,
-    params2D:list = areal_mod.__all__, #list of 2D parameters to calculate, calculates for both the sections and the whole
+    params1D:list|None = None, # list of 1D parameters to calculate,
+    params2D:list|None = None, #list of 2D parameters to calculate, calculates for both the sections and the whole
 ):
     '''
     Perform parameter calculation on a given file or directory, if none is provided .
@@ -90,6 +90,8 @@ def rough(
             
         #-------------Parameter Calculation------------------
         if profile:
+            if params1D is None:
+                params1D = profile_mod.__all__
             profile_results = compute_parameters(array, params1D, profile_mod, to_df = True)
             
             if result_how == 'concat':
@@ -104,6 +106,8 @@ def rough(
                     rot_profile_result_list.append(rot_profile_results)
         
         if section:
+            if params2d is None:
+                params2D = areal_mod.__all__
             section_results = compute_parameters(array, params2D, areal_mod, to_df = True)
             
             if result_how == 'concat':
