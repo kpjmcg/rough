@@ -40,8 +40,8 @@ def rough(
     profile:Param("Calculate profile parameters", bool_arg) = True, #Calculate profile parameters
     section:Param("Calculate section parameters", bool_arg) = True, #Calculate section parameters
     
-    params1D:list|None = None, # list of 1D parameters to calculate,
-    params2D:list|None = None, #list of 2D parameters to calculate, calculates for both the sections and the whole
+    params1D:list = None, # list of 1D parameters to calculate,
+    params2D:list = None, #list of 2D parameters to calculate, calculates for both the sections and the whole
 ):
     '''
     Perform parameter calculation on a given file or directory, if none is provided .
