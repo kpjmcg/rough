@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['gen_rot_prof', 'image2xyz', 'xyz2image', 'remove_form', 'plane_level', 'smooth_image', 'gen_sections',
-           'compute_parameters', 'distance_matrix']
+           'compute_parameters', 'distance_matrix', 'normalize']
 
 # %% ../00_data.ipynb 5
 import numpy as np
@@ -131,23 +131,29 @@ def gen_sections(image, #2D array (or arraylike) of height values
         raise ValueError('Invalid how, expected one of:')
    
     if how == 'square':
-        row, col = image.shape
+        im_height, im_width = image.shape
         length   = number**0.5
-        roww     = int(row//length)
-        colw     = int(col//length) 
+        roww     = int(im_height//length)
+        colw     = int(im_width//length) 
+
+        image = image[:(im_height - (im_height % roww)), :(im_width - (im_width % colw))] #Remove extra rows/columns
         
-        sections = []
-        for i in range(0, row - (row % roww), roww): #TODO: speed this up 
-            for j in range(0, col - (col % colw), colw):
-                sections.append(image[i:i+roww,j:j+colw])
-        return np.array(sections)
+        #https://towardsdatascience.com/efficiently-splitting-an-image-into-tiles-in-python-using-numpy-d1bf0dd7b6f7
+        #reshape_formula = a_10000.reshape(int(im_height/tile),tile,int(im_width/tile),tile,channels)
+        image_reshaped = image.reshape(int(im_height/roww),roww,int(im_width/colw),colw)
+        
+        tiled_image = image_reshaped.swapaxes(1,2)
+        
+        sectioned_image = tiled_image.reshape(-1,roww,colw)
+        return sectioned_image
+    
     if how == 'row':
         return np.vsplit(image, number)
     
     if how == 'column':
         return np.hsplit(image, number)
 
-# %% ../00_data.ipynb 40
+# %% ../00_data.ipynb 39
 def compute_parameters(array, #Input array to be calculate parameters on
                        parameter_list:list,  #List of parameters to calculate as strings
                        valid_module  = None, #module to generate functions from, used to check user input, see rough.cli:rough
@@ -174,14 +180,20 @@ def compute_parameters(array, #Input array to be calculate parameters on
     else:
         return results
 
-# %% ../00_data.ipynb 41
-def distance_matrix(shape: (int,int), #Shape of array, used to calculate center if not given
+# %% ../00_data.ipynb 40
+def distance_matrix(shape: tuple, #Shape of array, used to calculate center if not given
                     center: (int,int) = None, #Central point from which to calculate distances, if None, defaults to x//2, y//2
+                    sections = False, #If True, takes the first element of shape as the number of stack in image
                    ):
     '''
     Returns a (m,n) matrix containing distance values from center coordinates.
     
+    if Sections = True. Returns (x,m,n) where x is the number of input sections. 
+    
     '''
+    if sections:
+        n_stack = shape[0]
+        shape   = shape[1:]
     if center is None:
         center = (shape[0]//2,shape[1]//2)
         
@@ -189,4 +201,36 @@ def distance_matrix(shape: (int,int), #Shape of array, used to calculate center 
     #Pythagoras
     return np.sqrt(((y_arr - center[0])**2) + ((x_arr - center[1]) ** 2))
         
+    
+
+# %% ../00_data.ipynb 46
+def normalize(im, #Array or stack of array to normalize
+              axis = 1, #Axis along which to normalize
+              how = 'center', #normalization method: 'center', 'standardize', 'minmax'
+              feature_range = None, #Tuple containing the feature range for minmax
+             ):
+    '''
+    Normalize the input array along given axis. Typically used to 'center' rows/columns/areas in order to calculate parameters.
+    how can be:
+    - 'center': Subtract the mean from the array along the axis,
+    - 'l1'
+    - 'l2'
+    - 'standardize' : Subtract the mean and divide by the standard deviation along given axis
+    - 'minmax' : 'standardize' within 'feature_range'. See use in `Sal`
+    
+    Mostly a reimplementation of scalers from sklearn with explicit formulation. 
+    '''
+    if how == 'center':
+        return im - np.mean(im,axis=axis,keepdims= True)
+    elif how == 'standardize':
+        return ((im - np.mean(im,axis=axis,keepdims=True)) / np.std(im,axis=axis,keepdims= True))
+    elif how == 'minmax':
+        if feature_range is None:
+            feature_range = (-1,1)
+            
+        im_std = (im - np.amin(im,axis=axis,keepdims=True)) / np.ptp(im,axis=axis,keepdims=True)
+        min_r,max_r = feature_range 
+        return im_std * (max_r - min_r) + min_r
+    elif how == 'none':
+        return im
     

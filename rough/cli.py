@@ -16,7 +16,7 @@ from .areal import *
 import rough.profile as profile_mod
 import rough.areal as areal_mod
 
-# %% ../04_cli.ipynb 7
+# %% ../04_cli.ipynb 6
 @call_parse
 def rough(
     fname:str   = None,   #File name, path or directory with data files to be read
