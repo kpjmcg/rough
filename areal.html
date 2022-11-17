@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Set of functions for calculating 2 Dimensional areal surface roughness parameters.">
+
+<title>rough - Areal</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="rough - Areal">
+<meta property="og:description" content="Set of functions for calculating 2 Dimensional areal surface roughness parameters.">
+<meta property="og:site-name" content="rough">
+<meta name="twitter:title" content="rough - Areal">
+<meta name="twitter:description" content="Set of functions for calculating 2 Dimensional areal surface roughness parameters.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">rough</span>
+    </a>
+  </div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Areal</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Rough</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./profile.html" class="sidebar-item-text sidebar-link">Profile</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./areal.html" class="sidebar-item-text sidebar-link active">Areal</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.html" class="sidebar-item-text sidebar-link">Examples</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cli.html" class="sidebar-item-text sidebar-link">CLI</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sa" id="toc-sa" class="nav-link active" data-scroll-target="#sa">Sa</a></li>
+  <li><a href="#sms" id="toc-sms" class="nav-link" data-scroll-target="#sms">Sms</a></li>
+  <li><a href="#ssk" id="toc-ssk" class="nav-link" data-scroll-target="#ssk">Ssk</a></li>
+  <li><a href="#sku" id="toc-sku" class="nav-link" data-scroll-target="#sku">Sku</a></li>
+  <li><a href="#sp" id="toc-sp" class="nav-link" data-scroll-target="#sp">Sp</a></li>
+  <li><a href="#sv" id="toc-sv" class="nav-link" data-scroll-target="#sv">Sv</a></li>
+  <li><a href="#sz" id="toc-sz" class="nav-link" data-scroll-target="#sz">Sz</a></li>
+  <li><a href="#spatial-parameters" id="toc-spatial-parameters" class="nav-link" data-scroll-target="#spatial-parameters">Spatial Parameters</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/kpjmcg/rough/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Areal</h1>
+</div>
+
+<div>
+  <div class="description">
+    Set of functions for calculating 2 Dimensional areal surface roughness parameters.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>To demonstrate, we’re going to build on data we processed in <code>data</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>image    <span class="op">=</span> np.loadtxt(<span class="st">'example.txt'</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>sections <span class="op">=</span> np.load(<span class="st">'example_sections.npy'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/areal.py#L16" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="sa" class="level3">
+<h3 class="anchored" data-anchor-id="sa">Sa</h3>
+<blockquote class="blockquote">
+<pre><code> Sa (im, norm=True, axis=None, sections=False, **kwargs)</code></pre>
+</blockquote>
+<p>Calculates the mean absolute difference from the mean plane. Equivalent to Ra(array, axis = None)</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or arraylike. typically (m,n) for 1 array or (k,m,n) for k (m,n) stacked arrays</td>
+</tr>
+<tr class="even">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>axis</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>sections</td>
+<td>bool</td>
+<td>False</td>
+<td>If true, calculates the Sa of the stack of images, (i.e.&nbsp;sets axis = (1,2))</td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>(Sa(image),</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a> Sa(image,axis <span class="op">=</span> (<span class="dv">0</span>,<span class="dv">1</span>)),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a> Sa(sections,sections<span class="op">=</span><span class="va">True</span>)[:<span class="dv">3</span>],</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a> Sa(sections,axis<span class="op">=</span>(<span class="dv">1</span>,<span class="dv">2</span>))[:<span class="dv">3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(0.00047688714130073284,
+ 0.00047688714130073284,
+ array([0.00028241, 0.00042414, 0.00020014]),
+ array([0.00028241, 0.00042414, 0.00020014]))</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/areal.py#L33" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="sms" class="level3">
+<h3 class="anchored" data-anchor-id="sms">Sms</h3>
+<blockquote class="blockquote">
+<pre><code> Sms (im, norm=True, axis=None, sections=False, **kwargs)</code></pre>
+</blockquote>
+<p>Calculates the root mean square difference from the mean plane. Equivalent to Rms(array, axis = None)</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or arraylike. typically (m,n) for 1 array or (k,m,n) for k (m,n) stacked arrays</td>
+</tr>
+<tr class="even">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>axis</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>sections</td>
+<td>bool</td>
+<td>False</td>
+<td>If true, calculates the Sms of the stack of images, (i.e.&nbsp;sets axis = (1,2))</td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>(Sms(image),Sms(sections,sections<span class="op">=</span><span class="va">True</span>)[:<span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(0.0006332906519311293,
+ array([0.00032491, 0.00049684, 0.0002654 , 0.00028618, 0.0004129 ]))</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/areal.py#L50" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="ssk" class="level3">
+<h3 class="anchored" data-anchor-id="ssk">Ssk</h3>
+<blockquote class="blockquote">
+<pre><code> Ssk (im, norm=True, axis=None, sections=False, **kwargs)</code></pre>
+</blockquote>
+<p>Calculates the Skew of the section. Equivalent to Rsk(im, axis = None) for an (m,n) array</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or arraylike. typically (m,n) for 1 array or (k,m,n) for k (m,n) stacked arrays</td>
+</tr>
+<tr class="even">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>axis</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>sections</td>
+<td>bool</td>
+<td>False</td>
+<td>If true, calculates the Ssk of the stack of images, (i.e.&nbsp;sets axis = (1,2))</td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>(Ssk(image),Ssk(sections, sections <span class="op">=</span> <span class="va">True</span>)[:<span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(0.09500122790758757,
+ array([-0.09524635,  0.28831296,  0.70445168, -0.75446586, -0.02569195]))</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/areal.py#L69" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="sku" class="level3">
+<h3 class="anchored" data-anchor-id="sku">Sku</h3>
+<blockquote class="blockquote">
+<pre><code> Sku (im, norm=True, axis=None, sections=False, **kwargs)</code></pre>
+</blockquote>
+<p>Calculates the Kurtosis of the section. Equivalent to Rku(im, axis = None) for an (m,n) array</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or arraylike. typically (m,n) for 1 array or (k,m,n) for k (m,n) stacked arrays</td>
+</tr>
+<tr class="even">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>axis</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>sections</td>
+<td>bool</td>
+<td>False</td>
+<td>If true, calculates the Sku of the stack of images, (i.e.&nbsp;sets axis = (1,2))</td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(Sku(image),Sku(sections,sections<span class="op">=</span><span class="va">True</span>)[:<span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(1.705202900719974,
+ array([-1.06809856, -0.88850324,  1.07656068, -0.61641668, -0.91538318]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>array_1 <span class="op">=</span> np.ones((<span class="dv">4</span>,<span class="dv">4</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>array_2 <span class="op">=</span> np.ones((<span class="dv">4</span>,<span class="dv">4</span>)) <span class="op">*</span> <span class="dv">2</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>array_3 <span class="op">=</span> np.ones((<span class="dv">4</span>,<span class="dv">4</span>)) <span class="op">*</span> <span class="dv">3</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>stack1232 <span class="op">=</span> np.array([array_1, array_2, array_3,array_2])</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>stack1232</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[[1., 1., 1., 1.],
+        [1., 1., 1., 1.],
+        [1., 1., 1., 1.],
+        [1., 1., 1., 1.]],
+
+       [[2., 2., 2., 2.],
+        [2., 2., 2., 2.],
+        [2., 2., 2., 2.],
+        [2., 2., 2., 2.]],
+
+       [[3., 3., 3., 3.],
+        [3., 3., 3., 3.],
+        [3., 3., 3., 3.],
+        [3., 3., 3., 3.]],
+
+       [[2., 2., 2., 2.],
+        [2., 2., 2., 2.],
+        [2., 2., 2., 2.],
+        [2., 2., 2., 2.]]])</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/areal.py#L86" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="sp" class="level3">
+<h3 class="anchored" data-anchor-id="sp">Sp</h3>
+<blockquote class="blockquote">
+<pre><code> Sp (im, norm=True, axis=None, sections=False, **kwargs)</code></pre>
+</blockquote>
+<p>Calculates the maximum peak height of the surface</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or arraylike. typically (m,n) for 1 array or (k,m,n) for k (m,n) stacked arrays</td>
+</tr>
+<tr class="even">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>axis</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>sections</td>
+<td>bool</td>
+<td>False</td>
+<td>If true, calculates the Sp of the stack of images, (i.e.&nbsp;sets axis = (1,2))</td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>test_eq(Sp(np.array([<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="op">-</span><span class="dv">6</span>,<span class="dv">6</span>]), norm<span class="op">=</span><span class="va">False</span>), <span class="dv">6</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>test_eq(Sp(np.array([<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>]), norm<span class="op">=</span><span class="va">True</span>), <span class="dv">0</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>test_eq(Sp(stack1232, norm<span class="op">=</span><span class="va">False</span>, sections <span class="op">=</span> <span class="va">True</span>), np.array([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">2</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/areal.py#L103" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="sv" class="level3">
+<h3 class="anchored" data-anchor-id="sv">Sv</h3>
+<blockquote class="blockquote">
+<pre><code> Sv (im, norm=True, axis=None, sections=False, **kwargs)</code></pre>
+</blockquote>
+<p>Calculates the absolute maximum pit depth of the surface</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or arraylike. typically (m,n) for 1 array or (k,m,n) for k (m,n) stacked arrays</td>
+</tr>
+<tr class="even">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>axis</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>sections</td>
+<td>bool</td>
+<td>False</td>
+<td>If true, calculates the Sv of the stack of images , (i.e.&nbsp;sets axis = (1,2))</td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>test_eq(Sv(np.array([<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="op">-</span><span class="dv">5</span>]), norm <span class="op">=</span> <span class="va">False</span>), <span class="dv">5</span>) </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>test_eq(Sv(np.array([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>]), norm <span class="op">=</span> <span class="va">False</span>), <span class="dv">1</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>test_eq(Sv(stack1232, norm<span class="op">=</span><span class="va">False</span>, sections <span class="op">=</span> <span class="va">True</span>), np.array([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">2</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/areal.py#L120" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="sz" class="level3">
+<h3 class="anchored" data-anchor-id="sz">Sz</h3>
+<blockquote class="blockquote">
+<pre><code> Sz (im, norm=True, axis=None, sections=False, **kwargs)</code></pre>
+</blockquote>
+<p>Calculates the maximum height (max peak + absolute max pit) of the surface. Synonymous with the range of height values or peak to peak.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or arraylike, typically (m,n) for 1 array or (k,m,n) for k (m,n) stacked arrays</td>
+</tr>
+<tr class="even">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>axis</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>sections</td>
+<td>bool</td>
+<td>False</td>
+<td>If true, calculates the Sz of the stack of images, (i.e.&nbsp;sets axis = (1,2))</td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>test_eq(Sz(np.array([<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">5</span>]), norm <span class="op">=</span> <span class="va">False</span>), <span class="dv">5</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>test_eq(Sz(np.array([<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">1</span>]), norm <span class="op">=</span> <span class="va">False</span>), <span class="dv">4</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>test_eq(Sz(stack1232, norm <span class="op">=</span> <span class="va">False</span>, sections <span class="op">=</span> <span class="va">True</span>,), np.array([<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>])) </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>test_eq(Sz(np.array([<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">1</span>])), Sz(np.array([<span class="dv">5</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>])))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="spatial-parameters" class="level3">
+<h3 class="anchored" data-anchor-id="spatial-parameters">Spatial Parameters</h3>
+<p>Autocorrelation is the delayed correlation of a signal with itself. In this case our “signal” is the height data.</p>
+<p>To generate the autocorrelation function and visualise it we can use the scipy correlate function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>im_mean <span class="op">=</span> image <span class="op">-</span> np.mean(image,axis<span class="op">=</span><span class="va">None</span>, keepdims <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>im_cor <span class="op">=</span> correlate(im_mean,im_mean, mode <span class="op">=</span> <span class="st">'same'</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>plt.imshow(im_cor)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="02_areal_files/figure-html/cell-19-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>The Spatial Autocorellation parameter is the correlation of the surface with itself, with values normalized to be in the range [-1,1].</p>
+<p>Sal is the distance which has the fastest decay to a given parameter (s), usually 0.2.</p>
+<p>To calculate Sal, we calculate the autocorellation function (acf), normalize the result, generate a distance matrix from the center of the array, and find the shortest distance (d) that is acf &lt;= s.</p>
+<p>We already have the im_cor above. So lets find the Sal step by step.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>im_ncor <span class="op">=</span> normalize(im_cor, axis <span class="op">=</span> <span class="va">None</span>, how <span class="op">=</span> <span class="st">'minmax'</span>) <span class="co">#minmax defaults to [-1,1] which is typically unusual</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>plt.imshow(im_ncor)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="02_areal_files/figure-html/cell-20-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Lets see what values are below 0.2</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>plt.imshow(np.where(im_ncor <span class="op">&lt;=</span> <span class="fl">0.2</span>, im_ncor, np.NaN))</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="02_areal_files/figure-html/cell-21-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>We need to find the shortest distance from the center to the edge of this oval of NaNs. I generate a distance matrix and find the min, this might not be the fastest/most efficient solution so if you have a suggestion to improve it then raise an issue on the github!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>dists <span class="op">=</span> distance_matrix(im_ncor.shape)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>plt.imshow(dists)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="02_areal_files/figure-html/cell-22-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Now we filter the dists by the normalize correlation function and return the resulting min.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>im_Sal <span class="op">=</span> np.nanmin(np.where(im_ncor <span class="op">&lt;=</span> <span class="fl">0.2</span>, dists, np.NaN)) <span class="co">#This reads: Where im_ncor is less than or equal to 0.2, return respective dist, else return NaN</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'The images Sal is: </span><span class="sc">{</span>im_Sal<span class="sc">}</span><span class="ss"> Pixel Units'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The images Sal is: 23.345235059857504 Pixel Units</code></pre>
+</div>
+</div>
+<p>Note the use of Pixel Units, Rough can’t tell what units you are using (yet!), so be sure to convert the pixel distance to whatever unit you are using.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Sal(im, <span class="co">#Numpy array or arraylike, typically (m,n) for 1 array or (k,m,n) for k (m,n) stacked arrays</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>       norm <span class="op">=</span> <span class="va">True</span>, <span class="co">#Normalize the input array</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>       norm_how <span class="op">=</span> <span class="st">'center'</span>, <span class="co">#How to normalize the data, see `normalize`,</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>       axis <span class="op">=</span> <span class="va">None</span>, </span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>       sections <span class="op">=</span> <span class="va">False</span>, <span class="co">#If true, calculates the Sal of the stack of images, (i.e. sets axis = (1,2))</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>       s <span class="op">=</span> <span class="fl">0.2</span>, <span class="co">#Default decay value.</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>       scale <span class="op">=</span> <span class="va">True</span>, <span class="co">#Scale the respective array via im / np.linalg.norm(im)</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>       <span class="op">**</span>kwargs <span class="co">#keyword arguments to be passed to numpy.ptp</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>      ):</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="co">    Calculates the autocorellation length parameter. Defined as the horizontal distance of the autocorellation function</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="co">    which has the fastest decay to s, with  0 &lt;= s &lt;= 1. </span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="co">    Can determine the presense of lay, the direction of the predominant surface pattern. </span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> sections:</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>        axis <span class="op">=</span> (<span class="dv">1</span>,<span class="dv">2</span>)</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> norm:</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>        normalize(im, axis <span class="op">=</span> axis, how <span class="op">=</span> norm_how)</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Calculate and normalize autocorrelation results for the array to (-1,1) range</span></span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>    im_corr <span class="op">=</span> correlate(im,im,mode <span class="op">=</span> <span class="st">'same'</span>)</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>    im_norm_corr <span class="op">=</span> normalize(im_corr, axis <span class="op">=</span> axis, how <span class="op">=</span> <span class="st">'minmax'</span>)     </span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Find the smallest distance where autocorrelation function is &lt;= s</span></span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>    dists <span class="op">=</span> distance_matrix(im_norm_corr.shape)</span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>    dists_where <span class="op">=</span> np.where(im_norm_corr <span class="op">&lt;=</span> s, dists, np.NaN)</span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.nanmin(dists_where)</span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>    <span class="co">#TODO test with stack of images</span></span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Find the distance which is lowest that matches &lt;= s</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>test_eq(im_Sal, Sal(image))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>distance_matrix(sections.shape).shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(100, 50)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>a_10 <span class="op">=</span> np.arange(<span class="dv">10</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>a_10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>a_20 <span class="op">=</span> np.arange(<span class="dv">10</span>,<span class="dv">20</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>a_20</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([10, 11, 12, 13, 14, 15, 16, 17, 18, 19])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>np.where(a_10<span class="op">&gt;=</span><span class="dv">5</span>, np.NaN, a_10)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([ 0.,  1.,  2.,  3.,  4., nan, nan, nan, nan, nan])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>a_16 <span class="op">=</span> np.arange(<span class="dv">16</span>).reshape(<span class="dv">4</span>,<span class="dv">4</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>a_16</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[ 0,  1,  2,  3],
+       [ 4,  5,  6,  7],
+       [ 8,  9, 10, 11],
+       [12, 13, 14, 15]])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>a_dist <span class="op">=</span> distance_matrix(a_16.shape)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>a_dist</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[2.82842712, 2.23606798, 2.        , 2.23606798],
+       [2.23606798, 1.41421356, 1.        , 1.41421356],
+       [2.        , 1.        , 0.        , 1.        ],
+       [2.23606798, 1.41421356, 1.        , 1.41421356]])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>a_where <span class="op">=</span> np.where(a_16<span class="op">&gt;=</span><span class="dv">13</span>, a_dist, np.NaN)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>np.nanmin(a_where)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>1.0</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

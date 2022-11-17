@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Set of functions for calculating roughness parameters along profiles">
+
+<title>rough - Profile</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="rough - Profile">
+<meta property="og:description" content="Set of functions for calculating roughness parameters along profiles">
+<meta property="og:site-name" content="rough">
+<meta name="twitter:title" content="rough - Profile">
+<meta name="twitter:description" content="Set of functions for calculating roughness parameters along profiles">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">rough</span>
+    </a>
+  </div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Profile</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Rough</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./profile.html" class="sidebar-item-text sidebar-link active">Profile</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./areal.html" class="sidebar-item-text sidebar-link">Areal</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.html" class="sidebar-item-text sidebar-link">Examples</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cli.html" class="sidebar-item-text sidebar-link">CLI</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#statistical-parameters" id="toc-statistical-parameters" class="nav-link active" data-scroll-target="#statistical-parameters">Statistical Parameters</a>
+  <ul class="collapse">
+  <li><a href="#ra" id="toc-ra" class="nav-link" data-scroll-target="#ra">Ra</a></li>
+  <li><a href="#rms" id="toc-rms" class="nav-link" data-scroll-target="#rms">Rms</a></li>
+  <li><a href="#rsk" id="toc-rsk" class="nav-link" data-scroll-target="#rsk">Rsk</a></li>
+  <li><a href="#rku" id="toc-rku" class="nav-link" data-scroll-target="#rku">Rku</a></li>
+  <li><a href="#rp" id="toc-rp" class="nav-link" data-scroll-target="#rp">Rp</a></li>
+  <li><a href="#rv" id="toc-rv" class="nav-link" data-scroll-target="#rv">Rv</a></li>
+  <li><a href="#rz" id="toc-rz" class="nav-link" data-scroll-target="#rz">Rz</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/kpjmcg/rough/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Profile</h1>
+</div>
+
+<div>
+  <div class="description">
+    Set of functions for calculating roughness parameters along profiles
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>To demonstrate, we’re going to build on the data we processed in <code>data</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> np.loadtxt(<span class="st">'example.txt'</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>profiles <span class="op">=</span> np.loadtxt(<span class="st">'example_profiles.txt'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>plt.imshow(image)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="01_profile_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<section id="statistical-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-parameters">Statistical Parameters</h2>
+<p>The following methods are statistical in nature, providing a single number as a broad description of the distribution of the height values.</p>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/profile.py#L17" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="ra" class="level3">
+<h3 class="anchored" data-anchor-id="ra">Ra</h3>
+<blockquote class="blockquote">
+<pre><code> Ra (im, axis=1, norm=True)</code></pre>
+</blockquote>
+<p>Calculates Mean Absolute Roughness (Ra) along given axis. Defined as the average deviation of absolute height values from the mean line.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or arraylike</td>
+</tr>
+<tr class="even">
+<td>axis</td>
+<td>int</td>
+<td>1</td>
+<td>Default to Ra of rows</td>
+</tr>
+<tr class="odd">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td>Normalize the profile by subtracting the mean</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Ra(image)[:<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([0.00042114, 0.0004146 , 0.00040444, 0.00039162, 0.00037649])</code></pre>
+</div>
+</div>
+<p>Remember, if you just want the parameters of a certain profile, you just index into your image and be mindful of the axis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>first_row_profile    <span class="op">=</span> image[<span class="dv">0</span>,:]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>first_column_profile <span class="op">=</span> image[:,<span class="dv">0</span>]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>Ra(first_column_profile, axis <span class="op">=</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>0.00043905629459996097</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/profile.py#L29" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="rms" class="level3">
+<h3 class="anchored" data-anchor-id="rms">Rms</h3>
+<blockquote class="blockquote">
+<pre><code> Rms (im, axis=1, norm=True)</code></pre>
+</blockquote>
+<p>Calculates Root Mean Square Roughness (Rms) along given axis. Defined as the root mean square of deviations of height from the mean line of a given profile.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or array like</td>
+</tr>
+<tr class="even">
+<td>axis</td>
+<td>int</td>
+<td>1</td>
+<td>Default to Rms of rows</td>
+</tr>
+<tr class="odd">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td>Normalize the profile by subtracting the mean</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Rms(image)[:<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([0.0005232 , 0.00051211, 0.00049625, 0.00047939, 0.00046217])</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/profile.py#L41" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="rsk" class="level3">
+<h3 class="anchored" data-anchor-id="rsk">Rsk</h3>
+<blockquote class="blockquote">
+<pre><code> Rsk (im, axis=1, norm=True, **kwargs)</code></pre>
+</blockquote>
+<p>Calcultes the Skew (Rsk) along given axis. Thin wrapper around scipy.stats.skew with bias set to False</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or array like</td>
+</tr>
+<tr class="even">
+<td>axis</td>
+<td>int</td>
+<td>1</td>
+<td>Default to Skew of rows</td>
+</tr>
+<tr class="odd">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td>Normalize the profile by subtracting the mean</td>
+</tr>
+<tr class="even">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Rsk(image)[:<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([-0.34102473, -0.34162509, -0.33785933, -0.32203996, -0.2844012 ])</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/profile.py#L54" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="rku" class="level3">
+<h3 class="anchored" data-anchor-id="rku">Rku</h3>
+<blockquote class="blockquote">
+<pre><code> Rku (im, axis=1, norm=True, **kwargs)</code></pre>
+</blockquote>
+<p>Calculates the Kurtosis (Rku) along given axis. This wrapper around scipy.stats.kurtosis</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or array like</td>
+</tr>
+<tr class="even">
+<td>axis</td>
+<td>int</td>
+<td>1</td>
+<td>Default to Kurtosis of rows</td>
+</tr>
+<tr class="odd">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td>Normalize the profile by subtracting the mean</td>
+</tr>
+<tr class="even">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Rku(image)[:<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([-0.67518082, -0.7123575 , -0.75156931, -0.76424118, -0.74213074])</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/profile.py#L67" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="rp" class="level3">
+<h3 class="anchored" data-anchor-id="rp">Rp</h3>
+<blockquote class="blockquote">
+<pre><code> Rp (im, axis=1, norm=True, **kwargs)</code></pre>
+</blockquote>
+<p>Calculates the peak height of the profile.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or array like</td>
+</tr>
+<tr class="even">
+<td>axis</td>
+<td>int</td>
+<td>1</td>
+<td>Default to peaks of rows</td>
+</tr>
+<tr class="odd">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td>Normalize the profile by subtracting the mean</td>
+</tr>
+<tr class="even">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/profile.py#L82" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="rv" class="level3">
+<h3 class="anchored" data-anchor-id="rv">Rv</h3>
+<blockquote class="blockquote">
+<pre><code> Rv (im, axis=1, norm=True, **kwargs)</code></pre>
+</blockquote>
+<p>Calculates the absolute max valley depth of the profile.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or array like</td>
+</tr>
+<tr class="even">
+<td>axis</td>
+<td>int</td>
+<td>1</td>
+<td>Default to peaks of rows</td>
+</tr>
+<tr class="odd">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td>Normalize the profile by subtracting the mean</td>
+</tr>
+<tr class="even">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/kpjmcg/rough/blob/main/rough/profile.py#L97" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="rz" class="level3">
+<h3 class="anchored" data-anchor-id="rz">Rz</h3>
+<blockquote class="blockquote">
+<pre><code> Rz (im, axis=1, norm=True, **kwargs)</code></pre>
+</blockquote>
+<p>Calculates the maximum height (max height + absolute max depth) of the profile. Synonymous with range. Also called Rt</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td>Numpy array or array like</td>
+</tr>
+<tr class="even">
+<td>axis</td>
+<td>int</td>
+<td>1</td>
+<td>Default to peaks of rows</td>
+</tr>
+<tr class="odd">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td>Normalize the profile by subtracting the mean</td>
+</tr>
+<tr class="even">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Texture Parameters</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> local_max_min(im,</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                  axis <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                  norm <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>                  <span class="op">**</span>kwargs</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                 ):</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">''' </span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns the number of local maxima and minima per unit length, also known as the density of extremes from Nayak (1971).</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Assumes the surface is random, with a gaussian distribution of heights (usually pretty safe). </span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> norm:</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>        im <span class="op">=</span> im <span class="op">-</span> np.mean(im, axis <span class="op">=</span> axis, keepdims <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    m2 <span class="op">=</span> moment(im, moment<span class="op">=</span><span class="dv">2</span>, axis <span class="op">=</span> axis)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    m4 <span class="op">=</span> moment(im, moment<span class="op">=</span><span class="dv">4</span>, axis <span class="op">=</span> axis)</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (<span class="dv">1</span><span class="op">/</span>math.pi) <span class="op">*</span> ((m4<span class="op">/</span>m2)<span class="op">**</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Sds(im,</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>        axis <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>        norm <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>kwargs</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>       ):</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Density of summits, as described by Nayak (1971).</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Assumes gaussian, isotropic surface. </span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    m2 <span class="op">=</span> moment(im, moment<span class="op">=</span><span class="dv">2</span>, axis <span class="op">=</span> axis)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    m4 <span class="op">=</span> moment(im, moment<span class="op">=</span><span class="dv">4</span>, axis <span class="op">=</span> axis)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (<span class="dv">1</span> <span class="op">/</span> (<span class="dv">6</span> <span class="op">*</span> math.pi <span class="op">*</span> (<span class="dv">3</span><span class="op">**</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">2</span>)))) <span class="op">*</span> (m4<span class="op">/</span>m2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>Sds(image)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([1.94925116e-08, 1.83759885e-08, 1.69600203e-08, 1.57376224e-08,
+       1.47721105e-08, 1.41187821e-08, 1.37611040e-08, 1.34290580e-08,
+       1.29276764e-08, 1.23666839e-08, 1.18297973e-08, 1.13012382e-08,
+       1.06949448e-08, 9.96241817e-09, 9.20056523e-09, 8.54169206e-09,
+       8.13197494e-09, 7.92167484e-09, 7.72233601e-09, 7.44147308e-09,
+       7.20464056e-09, 7.16168132e-09, 7.30183438e-09, 7.48230718e-09,
+       7.66921800e-09, 7.88896781e-09, 8.06797688e-09, 8.07306313e-09,
+       7.92745200e-09, 7.70990169e-09, 7.52410251e-09, 7.52048515e-09,
+       7.74437594e-09, 8.06943248e-09, 8.25553321e-09, 8.20078847e-09,
+       7.98095757e-09, 7.69064353e-09, 7.44539834e-09, 7.28363005e-09,
+       7.15245870e-09, 7.04371614e-09, 6.98843369e-09, 7.03629638e-09,
+       7.18705409e-09, 7.35724872e-09, 7.39625415e-09, 7.27723207e-09,
+       7.14163420e-09, 7.07995996e-09, 7.06053345e-09, 7.11344971e-09,
+       7.26294110e-09, 7.37932950e-09, 7.36470777e-09, 7.29613438e-09,
+       7.27515872e-09, 7.26436522e-09, 7.10914231e-09, 6.82349361e-09,
+       6.50851934e-09, 6.24685544e-09, 6.14665211e-09, 6.29974387e-09,
+       6.63823425e-09, 7.07680740e-09, 7.59826767e-09, 8.14689207e-09,
+       8.62896658e-09, 9.02315511e-09, 9.32291377e-09, 9.54751944e-09,
+       9.76743679e-09, 9.89451135e-09, 9.77830994e-09, 9.36820138e-09,
+       8.77212611e-09, 8.26698303e-09, 8.05691148e-09, 8.18608167e-09,
+       8.52952670e-09, 9.02127456e-09, 9.74798109e-09, 1.05576661e-08,
+       1.11373532e-08, 1.13902211e-08, 1.14172364e-08, 1.12768747e-08,
+       1.11877512e-08, 1.13489211e-08, 1.17535326e-08, 1.23244415e-08,
+       1.29465299e-08, 1.34730848e-08, 1.37596681e-08, 1.36231817e-08,
+       1.30523212e-08, 1.22601577e-08, 1.15756715e-08, 1.11945068e-08,
+       1.11986800e-08, 1.15527688e-08, 1.19799725e-08, 1.23121499e-08,
+       1.25734361e-08, 1.28249068e-08, 1.31322217e-08, 1.34202798e-08,
+       1.35595607e-08, 1.34823934e-08, 1.30867068e-08, 1.23655358e-08,
+       1.15113561e-08, 1.07716161e-08, 1.02843345e-08, 1.00343558e-08,
+       9.96705184e-09, 1.00337672e-08, 1.02606938e-08, 1.07592634e-08,
+       1.14189485e-08, 1.19866288e-08, 1.22856142e-08, 1.23180775e-08,
+       1.22592521e-08, 1.23050904e-08, 1.24665624e-08, 1.25871723e-08,
+       1.25206880e-08, 1.22427819e-08, 1.19036771e-08, 1.16893561e-08,
+       1.16093815e-08, 1.15178985e-08, 1.13024203e-08, 1.09358603e-08,
+       1.05388882e-08, 1.02522510e-08, 1.00388996e-08, 9.78701629e-09,
+       9.53468080e-09, 9.55429184e-09, 1.00463798e-08, 1.09492227e-08,
+       1.20470599e-08, 1.30196415e-08, 1.35950868e-08, 1.38843001e-08,
+       1.41604266e-08, 1.45958571e-08, 1.51574183e-08, 1.55576201e-08,
+       1.56294907e-08, 1.55215596e-08, 1.54723487e-08, 1.55465724e-08,
+       1.57558444e-08, 1.61786845e-08, 1.68419582e-08, 1.77694838e-08,
+       1.88322287e-08, 1.95668590e-08, 1.95620333e-08, 1.88189717e-08,
+       1.76883064e-08, 1.65107453e-08, 1.53962631e-08, 1.43774865e-08,
+       1.34668849e-08, 1.26069462e-08, 1.17761858e-08, 1.10657382e-08,
+       1.06177721e-08, 1.03788365e-08, 1.02233815e-08, 1.01367470e-08,
+       1.01599480e-08, 1.03797501e-08, 1.08559633e-08, 1.15238513e-08,
+       1.22361643e-08, 1.27861520e-08, 1.29986714e-08, 1.30391488e-08,
+       1.31436398e-08, 1.32153411e-08, 1.31200809e-08, 1.29608831e-08,
+       1.29444356e-08, 1.30535552e-08, 1.32161606e-08, 1.36739123e-08,
+       1.46669239e-08, 1.62144532e-08, 1.79252069e-08, 1.89927666e-08,
+       1.91332939e-08, 1.90084946e-08, 1.92410158e-08, 1.97048960e-08,
+       1.99925209e-08, 1.99654352e-08, 1.96858218e-08, 1.93504341e-08,
+       1.91110699e-08, 1.88364253e-08, 1.83793662e-08, 1.77179044e-08,
+       1.69299436e-08, 1.63317398e-08, 1.62465581e-08, 1.66834519e-08,
+       1.74009257e-08, 1.81164128e-08, 1.86016339e-08, 1.87460314e-08,
+       1.86288041e-08, 1.84254854e-08, 1.82303148e-08, 1.78536091e-08,
+       1.70482951e-08, 1.58387003e-08, 1.45466962e-08, 1.34749467e-08,
+       1.26485788e-08, 1.21369769e-08, 1.19537113e-08, 1.19937201e-08,
+       1.21965960e-08, 1.23701849e-08, 1.23587170e-08, 1.21656001e-08,
+       1.18375273e-08, 1.14075995e-08, 1.08913272e-08, 1.03663443e-08,
+       9.82552225e-09, 9.13372521e-09, 8.28366828e-09, 7.55894379e-09,
+       7.37782053e-09, 7.80819665e-09, 8.55998834e-09, 9.35596052e-09,
+       9.96999532e-09, 1.04128492e-08, 1.09232754e-08, 1.16780784e-08,
+       1.26368634e-08, 1.35481494e-08, 1.42955437e-08, 1.49675679e-08,
+       1.56988070e-08, 1.66576143e-08, 1.77726802e-08, 1.86910116e-08,
+       1.92165683e-08, 1.94923395e-08, 1.97110559e-08, 1.96447106e-08,
+       1.89704709e-08, 1.77203441e-08, 1.62210498e-08, 1.48032623e-08,
+       1.36245114e-08, 1.26634228e-08, 1.18801534e-08, 1.13451432e-08,
+       1.11999041e-08, 1.14585991e-08, 1.19705679e-08, 1.24961920e-08,
+       1.28348825e-08, 1.29338597e-08, 1.29675359e-08, 1.31351827e-08,
+       1.34082234e-08, 1.36333973e-08, 1.37160789e-08, 1.37101549e-08,
+       1.36856817e-08, 1.36941282e-08, 1.38998068e-08, 1.44196016e-08,
+       1.50895638e-08, 1.55620192e-08, 1.57051025e-08, 1.56855153e-08,
+       1.56586316e-08, 1.56478628e-08, 1.56688027e-08, 1.57247026e-08,
+       1.57592523e-08, 1.58311450e-08, 1.61494420e-08, 1.68424602e-08,
+       1.78297004e-08, 1.88775418e-08, 1.97936252e-08, 2.06428952e-08,
+       2.16720687e-08, 2.30384429e-08, 2.46506277e-08, 2.62517279e-08,
+       2.77249861e-08, 2.91267551e-08, 3.04069207e-08, 3.12735755e-08,
+       3.15924164e-08, 3.17307410e-08, 3.21071361e-08, 3.28116397e-08,
+       3.37125468e-08, 3.44843763e-08, 3.49851807e-08, 3.53682158e-08,
+       3.57981932e-08, 3.62056562e-08, 3.64645139e-08, 3.67053834e-08,
+       3.70060677e-08, 3.69970557e-08, 3.63695278e-08, 3.53242205e-08,
+       3.41878981e-08, 3.31805052e-08, 3.24107801e-08, 3.19990831e-08,
+       3.20216336e-08, 3.22451388e-08, 3.23279544e-08, 3.22131408e-08,
+       3.19935179e-08, 3.17474070e-08, 3.16729269e-08, 3.19303528e-08,
+       3.23409817e-08, 3.26332080e-08, 3.27885650e-08, 3.29015084e-08,
+       3.31443724e-08, 3.35750171e-08, 3.40650206e-08, 3.42035189e-08,
+       3.37473920e-08, 3.29623112e-08, 3.21641905e-08, 3.13678304e-08,
+       3.03962090e-08, 2.91354276e-08, 2.75572949e-08, 2.58879532e-08,
+       2.44929491e-08, 2.33982454e-08, 2.24924642e-08, 2.17893345e-08,
+       2.12040915e-08, 2.07346537e-08, 2.03204081e-08, 1.97678931e-08,
+       1.90239631e-08, 1.81012154e-08, 1.69202992e-08, 1.55299087e-08,
+       1.42612124e-08, 1.32526644e-08, 1.24033982e-08, 1.17807325e-08,
+       1.15379604e-08, 1.18548851e-08, 1.26614315e-08, 1.35693224e-08,
+       1.43228036e-08, 1.49518694e-08, 1.55868480e-08, 1.63467255e-08,
+       1.71526140e-08, 1.78565715e-08, 1.84708027e-08, 1.88332965e-08,
+       1.87838517e-08, 1.86285453e-08, 1.88889678e-08, 1.93799750e-08,
+       1.93220840e-08, 1.86754137e-08, 1.77653865e-08, 1.67761387e-08,
+       1.60225128e-08, 1.56048016e-08, 1.53004720e-08, 1.50249635e-08,
+       1.49508710e-08, 1.52007362e-08, 1.57163508e-08, 1.63810547e-08,
+       1.70475619e-08, 1.75080585e-08, 1.75796129e-08, 1.71836343e-08,
+       1.66769810e-08, 1.64418344e-08, 1.63033148e-08, 1.59762721e-08,
+       1.54719055e-08, 1.50023077e-08, 1.47116568e-08, 1.45517403e-08,
+       1.43648849e-08, 1.41231710e-08, 1.39873101e-08, 1.39904224e-08,
+       1.40351881e-08, 1.39710950e-08, 1.36741561e-08, 1.33083598e-08,
+       1.29929704e-08, 1.25765598e-08, 1.17668843e-08, 1.05319372e-08,
+       9.50074959e-09, 9.24661525e-09, 9.78793615e-09, 1.08209837e-08,
+       1.20327466e-08, 1.31874454e-08, 1.42162188e-08, 1.53608215e-08,
+       1.66589277e-08, 1.78847122e-08, 1.88965716e-08, 1.96292907e-08,
+       2.00872154e-08, 2.03325147e-08, 2.02547004e-08, 1.97210011e-08,
+       1.88203203e-08, 1.79200191e-08, 1.72461037e-08, 1.67849066e-08,
+       1.67068664e-08, 1.71379023e-08, 1.79437980e-08, 1.89608672e-08,
+       2.02245242e-08, 2.19178800e-08, 2.40623803e-08, 2.65171090e-08,
+       2.93101586e-08, 3.25889145e-08, 3.63573329e-08, 4.04757472e-08,
+       4.46484718e-08, 4.86839121e-08, 5.27051034e-08, 5.66756207e-08,
+       6.00670537e-08, 6.25546179e-08, 6.43768081e-08, 6.57322923e-08,
+       6.67847627e-08, 6.75795557e-08, 6.82851755e-08, 6.90616225e-08,
+       6.99164352e-08, 7.09537085e-08, 7.22608101e-08, 7.38361376e-08,
+       7.57716716e-08, 7.81753202e-08, 8.08413256e-08, 8.34915742e-08,
+       8.58995067e-08, 8.80331486e-08, 9.00596321e-08, 9.21150094e-08,
+       9.43361432e-08, 9.64800881e-08, 9.81018570e-08, 9.93435800e-08,
+       1.00869702e-07, 1.03194011e-07, 1.06179733e-07, 1.09473431e-07,
+       1.12594851e-07, 1.14992912e-07, 1.16430587e-07, 1.17572262e-07,
+       1.19363421e-07, 1.21953154e-07, 1.25123773e-07, 1.28755392e-07,
+       1.33246899e-07, 1.38845984e-07, 1.45155921e-07, 1.51665582e-07,
+       1.58198642e-07, 1.64838581e-07, 1.71537759e-07, 1.78745521e-07,
+       1.85497200e-07])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>norm.stats(moments<span class="op">=</span><span class="st">'mvsk'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(array(0.), array(1.), array(0.), array(0.))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>loc, scale <span class="op">=</span> norm.fit(image[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>pdf <span class="op">=</span> norm.pdf(image[<span class="dv">0</span>],loc<span class="op">=</span>loc,scale<span class="op">=</span>scale)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>cdf <span class="op">=</span> norm.cdf(image[<span class="dv">0</span>],loc<span class="op">=</span>loc,scale<span class="op">=</span>scale)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>ax.plot(image[<span class="dv">0</span>],cdf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="01_profile_files/figure-html/cell-25-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>ax.hist(image[<span class="dv">0</span>],bins<span class="op">=</span><span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(array([26., 10., 22., 20., 11.,  8.,  3.,  2.,  3.,  4.,  6., 16., 31.,
+        37., 23., 26., 20., 30., 28., 43., 21., 17., 10., 11., 23., 15.,
+         9.,  6.,  8., 12.]),
+ array([-7.41222638e-04, -6.74375644e-04, -6.07528649e-04, -5.40681655e-04,
+        -4.73834661e-04, -4.06987667e-04, -3.40140673e-04, -2.73293679e-04,
+        -2.06446684e-04, -1.39599690e-04, -7.27526960e-05, -5.90570179e-06,
+         6.09412924e-05,  1.27788287e-04,  1.94635281e-04,  2.61482275e-04,
+         3.28329269e-04,  3.95176263e-04,  4.62023257e-04,  5.28870252e-04,
+         5.95717246e-04,  6.62564240e-04,  7.29411234e-04,  7.96258228e-04,
+         8.63105223e-04,  9.29952217e-04,  9.96799211e-04,  1.06364621e-03,
+         1.13049320e-03,  1.19734019e-03,  1.26418719e-03]),
+ &lt;BarContainer object of 30 artists&gt;)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="01_profile_files/figure-html/cell-26-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(norm.ppf(<span class="fl">0.01</span>),</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>                norm.ppf(<span class="fl">0.99</span>), <span class="dv">100</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>ax.plot(x, norm.pdf(x),</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>       <span class="st">'r-'</span>, lw<span class="op">=</span><span class="dv">5</span>, alpha<span class="op">=</span><span class="fl">0.6</span>, label<span class="op">=</span><span class="st">'norm pdf'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="01_profile_files/figure-html/cell-27-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
