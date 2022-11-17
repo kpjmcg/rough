@@ -6,8 +6,9 @@ __all__ = ['Ra', 'Rms', 'Rsk', 'Rku', 'Rp', 'Rv', 'Rz']
 # %% ../01_profile.ipynb 4
 import numpy as np
 from matplotlib import pyplot as plt
-from scipy.stats import skew, kurtosis
+from scipy.stats import skew, kurtosis, moment
 from scipy.signal import find_peaks
+import math
 
 from .data import *
 
