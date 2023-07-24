@@ -10,7 +10,7 @@ from .profile import *
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.stats import skew, kurtosis
-from scipy.signal import find_peaks
+from scipy.signal import find_peaks, correlate
 
 # %% ../02_areal.ipynb 7
 def Sa(im, #Numpy array or arraylike. typically (m,n) for 1 array or (k,m,n) for k (m,n) stacked arrays

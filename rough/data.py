@@ -103,7 +103,7 @@ def plane_level(im, #Numpy array or array like
         
     return remove_form(im = im, degree = 1, return_form = return_form)
 
-# %% ../00_data.ipynb 28
+# %% ../00_data.ipynb 27
 def smooth_image(array, #Numpy array or array like
                  sigma = 1, #Standard deviation for gaussian kernel Useful for determining the wavelength of the low pass filter
                  **kwargs #Keyword arguments for modification of the gaussian_filter function
