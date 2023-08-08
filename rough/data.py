@@ -18,7 +18,7 @@ from mpl_toolkits import mplot3d
 # %% ../00_data.ipynb 15
 def gen_rot_prof(array, #2D array of height values
                  deg       = 180, #Number of degrees to rotate through, i.e 180 gives full 360 rotation
-                 increment = 1 # indent/180 = number of evenly spaced profiles to calculate.  
+                 increment = 1 # deg/increment = number of evenly spaced profiles to calculate.  
                 ):
     
     ''' Generates an array of rotational profiles through to deg, in even increments of increment. 
