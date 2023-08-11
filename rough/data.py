@@ -104,15 +104,31 @@ def plane_level(im, #Numpy array or array like
     return remove_form(im = im, degree = 1, return_form = return_form)
 
 # %% ../00_data.ipynb 27
-def smooth_image(array, #Numpy array or array like
-                 sigma = 1, #Standard deviation for gaussian kernel Useful for determining the wavelength of the low pass filter
+def smooth_image(array,         #Numpy array or array like
+                 sigma = None,  #Standard deviation for gaussian kernel Useful for determining the wavelength of the low pass filter.
+                 alpha = None,  #Used in gaussian weighting function, defaults to np.sqrt(np.log(2)/np.pi) 
+                 cutoff = None, #Cutoff wavelength, defaults to 1
+                 axis  = None,  # Axis along which to apply filter 
                  **kwargs #Keyword arguments for modification of the gaussian_filter function
                 ):
     '''
-    Removes low frequency/wavelength features ('noise') by applying a gaussian filter on the image. 
+    Removes high frequency/wavelength features ('noise') by applying a gaussian filter on the image. 
     Thin wrapper of scipy.ndimage.gaussian_filter.
+    
+    If all sigma,alpha,cutoff =  None, sigma defaults to (np.sqrt(np.log(2)/np.pi)) * cutoff
+    
+    If sigma is not none, sigma takes priority over any alpha or cutoff provided. 
+    
+    Refer to ISO 11562:1997 for reasoning behind alpha and cutoff.
     '''
-    return ndimage.gaussian_filter(input = array, sigma = sigma, **kwargs)
+    if sigma is None:
+        if alpha is None: 
+            alpha = np.sqrt(np.log(2)/np.pi)
+        if cutoff is None:
+            cutoff = 1
+        sigma = alpha * cutoff 
+    
+    return ndimage.gaussian_filter(input = array, sigma = sigma, axes = axis, **kwargs)
 
 # %% ../00_data.ipynb 30
 def gen_sections(image, #2D array (or arraylike) of height values
