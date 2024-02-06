@@ -1,0 +1,23 @@
+Total Surface
+
+Uncertainty Information:
+Assume that Z co-ordinates have standard uncertainty of 10.0 nm (1% of Pq), 
+X co-ordinates have standard uncertainty of 20.0 nm (2% of sampling interval), and
+Y co-ordinates have standard uncertainty of 20.0 nm (2% of sampling interval), and
+measurement errors on Z, X, and Y co-ordinates are distributed normally and are independent. 
+250 images were used in uncertainty calculations.
+Percent Coverage  = 95%
+
+			Nominal value		Mean value			Uncertainty (95% Coverage)
+--------------------------------------------------------------------------------------------------------------------------------------------
+Sa			0.79725 um			0.79729 um			0.074 nm
+Sq			1.0 um			1.00005 um			0.071 nm
+Sku			3.01963 			3.01956 			7.4E-4 
+Sdq			1.39087 um/um		1.38974 um/um		36.74 nm/um
+Sdr			105.59 %			105.485 %			5.16 %
+Sds			0.08481 1/um^2		0.08481 1/um^2		0.0044 1/um^2
+Ssc			2.48509 			2.48275 			0.13 
+St			8.72321 um			8.72485 um			26.35 nm
+Sp			4.47924 um			4.47859 um			16.72 nm
+Sv			4.24398 um			4.24478 um			17.9 nm
+S10z			8.12422 um			8.1236 um			10.94 nm
