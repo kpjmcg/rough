@@ -4,7 +4,7 @@
 __all__ = ['gen_rot_prof', 'image2xyz', 'xyz2image', 'remove_form', 'plane_level', 'smooth_image', 'gen_sections',
            'compute_parameters', 'distance_matrix', 'normalize']
 
-# %% ../00_data.ipynb 5
+# %% ../00_data.ipynb 7
 import numpy as np
 import imutils
 import cv2 as cv
@@ -15,7 +15,7 @@ import sklearn.preprocessing
 import sklearn.linear_model
 from mpl_toolkits import mplot3d
 
-# %% ../00_data.ipynb 15
+# %% ../00_data.ipynb 17
 def gen_rot_prof(array, #2D array of height values
                  deg       = 180, #Number of degrees to rotate through, i.e 180 gives full 360 rotation
                  increment = 1 # deg/increment = number of evenly spaced profiles to calculate.  
@@ -38,7 +38,7 @@ def gen_rot_prof(array, #2D array of height values
     return profiles
             
 
-# %% ../00_data.ipynb 17
+# %% ../00_data.ipynb 19
 def image2xyz(im):
     '''
     Converts 2D (m,n) image/array to xyz coordinates. Used for plane levelling
@@ -50,7 +50,7 @@ def image2xyz(im):
     
     return xyz
 
-# %% ../00_data.ipynb 18
+# %% ../00_data.ipynb 20
 def xyz2image(xyz, # (n,3) shape array 
              ):
     '''
@@ -62,7 +62,7 @@ def xyz2image(xyz, # (n,3) shape array
               
 
 
-# %% ../00_data.ipynb 21
+# %% ../00_data.ipynb 23
 def remove_form(im, # 2D Numpy array or array like
                degree = 3, # Polynomial degree to remove
                return_form = False # Return the form/computed polynomial values instead of removing them from im
@@ -89,7 +89,7 @@ def remove_form(im, # 2D Numpy array or array like
         return im - form
     
 
-# %% ../00_data.ipynb 22
+# %% ../00_data.ipynb 24
 def plane_level(im, #Numpy array or array like
                 norm = True, #Normalize the data by subtracting the mean
                 return_form = False
@@ -103,7 +103,7 @@ def plane_level(im, #Numpy array or array like
         
     return remove_form(im = im, degree = 1, return_form = return_form)
 
-# %% ../00_data.ipynb 27
+# %% ../00_data.ipynb 29
 def smooth_image(array,         #Numpy array or array like
                  sigma = None,  #Standard deviation for gaussian kernel Useful for determining the wavelength of the low pass filter.
                  alpha = None,  #Used in gaussian weighting function, defaults to np.sqrt(np.log(2)/np.pi) 
@@ -130,7 +130,7 @@ def smooth_image(array,         #Numpy array or array like
     
     return ndimage.gaussian_filter(input = array, sigma = sigma, axes = axis, **kwargs)
 
-# %% ../00_data.ipynb 30
+# %% ../00_data.ipynb 32
 def gen_sections(image, #2D array (or arraylike) of height values
                 how = 'square', #How to subdivide the array, options are: 'square', 'row', 'column'
                 number = 100, #Number of sections to produce
@@ -169,7 +169,7 @@ def gen_sections(image, #2D array (or arraylike) of height values
     if how == 'column':
         return np.hsplit(image, number)
 
-# %% ../00_data.ipynb 39
+# %% ../00_data.ipynb 41
 def compute_parameters(array, #Input array to be calculate parameters on
                        parameter_list:list,  #List of parameters to calculate as strings
                        valid_module  = None, #module to generate functions from, used to check user input, see rough.cli:rough
@@ -196,7 +196,7 @@ def compute_parameters(array, #Input array to be calculate parameters on
     else:
         return results
 
-# %% ../00_data.ipynb 40
+# %% ../00_data.ipynb 42
 def distance_matrix(shape: tuple, #Shape of array, used to calculate center if not given
                     center: (int,int) = None, #Central point from which to calculate distances, if None, defaults to x//2, y//2
                     sections = False, #If True, takes the first element of shape as the number of stack in image
@@ -219,7 +219,7 @@ def distance_matrix(shape: tuple, #Shape of array, used to calculate center if n
         
     
 
-# %% ../00_data.ipynb 46
+# %% ../00_data.ipynb 48
 def normalize(im, #Array or stack of array to normalize
               axis = 1, #Axis along which to normalize
               how = 'center', #normalization method: 'center', 'standardize', 'minmax'
