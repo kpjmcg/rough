@@ -13,7 +13,7 @@ import math
 
 from .data import *
 
-# %% ../01_profile.ipynb 23
+# %% ../01_profile.ipynb 10
 def Ra(im, #Numpy array or arraylike
        axis = 1, #Default to Ra of rows
        norm = True #Normalize the profile by subtracting the mean 
@@ -25,7 +25,7 @@ def Ra(im, #Numpy array or arraylike
         im = im - np.mean(im, axis = axis, keepdims = True)
     return np.mean(np.absolute(im), axis = axis)
 
-# %% ../01_profile.ipynb 28
+# %% ../01_profile.ipynb 15
 def Rms(im, #Numpy array or array like
         axis = 1, #Default to Rms of rows
         norm = True #Normalize the profile by subtracting the mean
@@ -39,7 +39,7 @@ def Rms(im, #Numpy array or array like
         im = im - np.mean(im, axis = axis, keepdims = True)
     return np.sqrt(np.mean(np.square(im), axis = axis))
 
-# %% ../01_profile.ipynb 31
+# %% ../01_profile.ipynb 18
 def Rsk(im, #Numpy array or array like
          axis = 1, #Default to Skew of rows
          norm = True, #Normalize the profile by subtracting the mean
@@ -52,7 +52,7 @@ def Rsk(im, #Numpy array or array like
         im = im - np.mean(im, axis=axis, keepdims=True)
     return skew(a = im, axis=axis, **kwargs)
 
-# %% ../01_profile.ipynb 34
+# %% ../01_profile.ipynb 21
 def Rku(im, #Numpy array or array like
        axis = 1, #Default to Kurtosis of rows
        norm= True, #Normalize the profile by subtracting the mean
@@ -65,7 +65,7 @@ def Rku(im, #Numpy array or array like
         im = im - np.mean(im,axis=axis, keepdims=True)
     return kurtosis(a = im, axis = axis, **kwargs)
 
-# %% ../01_profile.ipynb 37
+# %% ../01_profile.ipynb 24
 def Rp(im, #Numpy array or array like
        axis = 1, # Default to peaks of rows
        norm = True, #Normalize the profile by subtracting the mean
@@ -80,7 +80,7 @@ def Rp(im, #Numpy array or array like
     return np.amax(im, axis = axis, **kwargs)
     
 
-# %% ../01_profile.ipynb 39
+# %% ../01_profile.ipynb 26
 def Rv(im, #Numpy array or array like
        axis = 1, # Default to peaks of rows
        norm = True, #Normalize the profile by subtracting the mean
@@ -95,7 +95,7 @@ def Rv(im, #Numpy array or array like
         
     return abs(np.amin(im, axis = axis, **kwargs))
 
-# %% ../01_profile.ipynb 41
+# %% ../01_profile.ipynb 28
 def Rz(im, #Numpy array or array like
        axis = 1, # Default to peaks of rows
        norm = True, #Normalize the profile by subtracting the mean
