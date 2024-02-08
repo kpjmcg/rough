@@ -13,7 +13,6 @@ import math
 
 from .data import *
 
-
 # %% ../01_profile.ipynb 23
 def Ra(im, #Numpy array or arraylike
        axis = 1, #Default to Ra of rows
