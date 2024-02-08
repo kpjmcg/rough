@@ -1,0 +1,162 @@
+[
+  {
+    "objectID": "smat_tests.html",
+    "href": "smat_tests.html",
+    "title": "SMAT Tests",
+    "section": "",
+    "text": "file = 'SMAT/Data3D_1/SG_1-1.txt'\nimage = np.loadtxt(file)\n\n\nplt.imshow(image)\nplt.show()\n\n\n\n\n\n\n\n\n\nSa(image)\n\n0.7972492402496817\n\n\n\nSms(image)\n\n1.0000000552480837\n\n\n\nSku(image)\n\n0.019626105861821674\n\n\n\nSsk(image)\n\n0.001342579063490285\n\n\n\nSp(image)\n\n4.479235945468537\n\n\n\nSv(image)\n\n4.243975629331464\n\n\n\nSz(image)\n\n8.7232115748",
+    "crumbs": [
+      "SMAT Tests"
+    ]
+  },
+  {
+    "objectID": "data.html",
+    "href": "data.html",
+    "title": "Data",
+    "section": "",
+    "text": "We will be treating 2D arrays as rasters. Basically load any .csv, .txt or other file into a numpy array as you would normally. Each entry should be the height data for it’s respective pixel.\nLet’s try out the simplest method, a text file containing an (M,N) array compatible with Numpy. If you’d like to try your own data, simply change the file below and the loading function (e.g. if you have a .csv just change the delimeter in the np.loadtxt() call).\nfile = 'BYGS008_top_segment_500samp_10cm_interp089.txt'\nimage = np.loadtxt(file)\nLet’s have a look at the image\nplt.imshow(image)\nplt.show()\nimage.shape\n\n(501, 501)\nIt can be very useful to study how roughness parameters change with regards to their orientation. The following function helps produce a range of profiles rotating around the central point of the image or array\nsource",
+    "crumbs": [
+      "Data"
+    ]
+  },
+  {
+    "objectID": "data.html#levelling-and-form-removal",
+    "href": "data.html#levelling-and-form-removal",
+    "title": "Data",
+    "section": "Levelling and Form Removal",
+    "text": "Levelling and Form Removal\nIn order to perform roughness calculations it is recommended to level the data and remove the underlying form.This produces a S-F surface from the primary surface if we are using Standards terms. Because surfaces are always digitized and discretized in some way, the actual surface has to be modelled using some function. ISO software standards recommend using a Bicubic spline to remove the form. Because the function is an assumption, the user should choose their function based on their scientific knowledge of the surface and the goals of their research. Multiple functions can be tested and the results observed. Here I provide a least-squares solution to the problem, computing the results in the same shape as the original image and subtract them.\nWith the underlying form modeled, the funciton can be sampled from to generate a larger number of samples.\n\nsource\n\nremove_form\n\n remove_form (im, degree=3, return_form=False)\n\nRemove the form of the raster by fitting a polynomial of specified degree and subtracting it.\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nim\n\n\n2D Numpy array or array like\n\n\ndegree\nint\n3\nPolynomial degree to remove\n\n\nreturn_form\nbool\nFalse\nReturn the form/computed polynomial values instead of removing them from im\n\n\n\n\nsource\n\n\nplane_level\n\n plane_level (im, norm=True, return_form=False)\n\nLevel an (m,n) array by computing the best fit plane and subtracting the results. Thin wrapper around remove_form with degree = 1.\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nim\n\n\nNumpy array or array like\n\n\nnorm\nbool\nTrue\nNormalize the data by subtracting the mean\n\n\nreturn_form\nbool\nFalse\n\n\n\n\n\nw = np.array([[1,1,1],[0,0,0],[-1,-1,-1]])\nu = np.array([[1,0,-1]]*3)\ntest_close(plane_level(w), np.zeros(w.shape))\ntest_close(plane_level(u), np.zeros(u.shape))\ntest_fail(plane_level, kwargs = dict(xyz=np.array([1])))\ntest_fail(plane_level, kwargs = dict(xyz=np.array([[1,1]])))\n\n\nfig = plt.figure()\nax = fig.add_subplot(1, 2, 1)\nimgplot = plt.imshow(plane_level(image))\nax.set_title('Levelled image')\nax = fig.add_subplot(1, 2, 2)\nimgplot = plt.imshow(plane_level(image, return_form = True))\nax.set_title('Levelling plane')\n\nText(0.5, 1.0, 'Levelling plane')\n\n\n\n\n\n\n\n\n\n\nimage_f = remove_form(plane_level(image))\nimage_form = remove_form(plane_level(image), return_form = True)\n\nfig = plt.figure()\nax = fig.add_subplot(1, 2, 1)\nimgplot = plt.imshow(image_f)\nax.set_title('Formless Image')\nax = fig.add_subplot(1, 2, 2)\nimgplot = plt.imshow(image_form)\nax.set_title('Polynomial')\n\nText(0.5, 1.0, 'Polynomial')",
+    "crumbs": [
+      "Data"
+    ]
+  },
+  {
+    "objectID": "data.html#noise-and-smoothing",
+    "href": "data.html#noise-and-smoothing",
+    "title": "Data",
+    "section": "Noise and smoothing",
+    "text": "Noise and smoothing\nSimilarly, it is recommended to remove noise and attenuate high frequency features. We achieve this through the use of a gaussian filter.\n\nsource\n\nsmooth_image\n\n smooth_image (array, sigma=None, alpha=None, cutoff=None, axis=None,\n               **kwargs)\n\nRemoves high frequency/wavelength features (‘noise’) by applying a gaussian filter on the image. Thin wrapper of scipy.ndimage.gaussian_filter.\nIf all sigma,alpha,cutoff = None, sigma defaults to (np.sqrt(np.log(2)/np.pi)) * cutoff\nIf sigma is not none, sigma takes priority over any alpha or cutoff provided.\nRefer to ISO 11562:1997 for reasoning behind alpha and cutoff.\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\narray\n\n\nNumpy array or array like\n\n\nsigma\nNoneType\nNone\nStandard deviation for gaussian kernel Useful for determining the wavelength of the low pass filter.\n\n\nalpha\nNoneType\nNone\nUsed in gaussian weighting function, defaults to np.sqrt(np.log(2)/np.pi)\n\n\ncutoff\nNoneType\nNone\nCutoff wavelength, defaults to 1\n\n\naxis\nNoneType\nNone\nAxis along which to apply filter\n\n\nkwargs\n\n\n\n\n\n\n\nimage_f_s = smooth_image(image_f,cutoff=1)\n\nfig = plt.figure()\nax = fig.add_subplot(1, 2, 1)\nimgplot = plt.imshow(image_f_s)\nax.set_title('Sigma = 1')\nax = fig.add_subplot(1, 2, 2)\nimgplot = plt.imshow(smooth_image(image_f,cutoff=10))\nax.set_title('Sigma = 10')\n\nText(0.5, 1.0, 'Sigma = 10')",
+    "crumbs": [
+      "Data"
+    ]
+  },
+  {
+    "objectID": "data.html#sections",
+    "href": "data.html#sections",
+    "title": "Data",
+    "section": "Sections",
+    "text": "Sections\nIt can be useful to study subsections of surfaces. The following helpers assist with this process. Otherwise, normal manipulation of numpy arrays is always possible.\n\nsource\n\ngen_sections\n\n gen_sections (image, how='square', number=100)\n\nGenerates sections of the array/image, either in square, horizontal, or vertical sections. Useful for studying the change of parameters over the surface. Mostly wraps around np.hsplit and np.vsplit. Note, if ‘number’ does not divide into the array evenly, the bottom/side remains will not be included.\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nimage\n\n\n2D array (or arraylike) of height values\n\n\nhow\nstr\nsquare\nHow to subdivide the array, options are: ‘square’, ‘row’, ‘column’\n\n\nnumber\nint\n100\nNumber of sections to produce\n\n\n\n\na_10000 = np.arange(100*100).reshape(100,100)\ntest_eq(gen_sections(a_10000)[0],a_10000[:10,:10])\n\na_523 = np.arange(523*523).reshape(523,523)\na_520 = np.arange(520*520).reshape(520,520)\ntest_eq(gen_sections(a_523).shape,gen_sections(a_520).shape)\n\n\ntest_sections = np.load('example_sections.npy')\ntest_sections.shape\n\n(100, 50, 50)\n\n\n\nimage_sections =  gen_sections(image)\n\nNow, because we’ve applied all of our preprocessing steps to the original image. We can export it for use later. We should also save our profiles and sections. The sections should be in .npy format because they are 3D.\n\nnp.savetxt('example.txt', image_f_s)\nnp.savetxt('example_profiles.txt', gen_rot_prof(image_f_s))\nnp.save('example_sections.npy', image_sections)\n\nAnd we can load them back in just to check.\n\nprofiles = np.loadtxt('example_profiles.txt')\nplt.imshow(profiles)\nplt.show()",
+    "crumbs": [
+      "Data"
+    ]
+  },
+  {
+    "objectID": "areal.html",
+    "href": "areal.html",
+    "title": "Areal",
+    "section": "",
+    "text": "To demonstrate, we’re going to build on data we processed in data\nimage    = np.loadtxt('example.txt')\nsections = np.load('example_sections.npy')\nsource",
+    "crumbs": [
+      "Areal"
+    ]
+  },
+  {
+    "objectID": "areal.html#todo-surface-slope-sdq",
+    "href": "areal.html#todo-surface-slope-sdq",
+    "title": "Areal",
+    "section": "TODO: Surface slope (Sdq)",
+    "text": "TODO: Surface slope (Sdq)\n\na_10 = np.arange(10)\na_10\n\n\na_20 = np.arange(10,20)\na_20\n\n\nnp.where(a_10&gt;=5, np.NaN, a_10)\n\n\na_16 = np.arange(16).reshape(4,4)\na_16\n\n\na_dist = distance_matrix(a_16.shape)\na_dist\n\n\na_where = np.where(a_16&gt;=13, a_dist, np.NaN)\nnp.nanmin(a_where)\n\nMeasures of Anisotropy\nA",
+    "crumbs": [
+      "Areal"
+    ]
+  },
+  {
+    "objectID": "examples.html",
+    "href": "examples.html",
+    "title": "Examples",
+    "section": "",
+    "text": "When working with raster data we generally want to perform the following workflow: 1. Remove the best fit plane and normalize the data 2. Remove the underlying form by fitting a Degree 3 Polynomial 3. Apply a high frequency gaussian filter to attenuate noise 4. Generate our rotational profiles and sections 5. Calculate our parameters. 6. Analyze the data.\nFirst let’s get some data\n\nimage = np.loadtxt('BYGS008_top_segment_500samp_10cm_interp089.txt')\n\nLet’s have a look\n\nplt.imshow(image)\nplt.show()\n\n\n\n\n\n\n\n\nOkay now let’s process it.\n\nlevelled_image     = plane_level(image)\nremove_form_image  = remove_form(levelled_image)\n\ndata     = smooth_image(remove_form_image)\nsections = gen_sections(data)\nprofiles = gen_rot_prof(data)\n(data.shape,sections.shape,profiles.shape)\n\nNameError: name 'plane_level' is not defined\n\n\nOur processed datta should look a little different.\n\nplt.imshow(data)\nplt.show()\n\nLooks good, let’s get our profile parameters. We’ll use the default settings, so our profiles move down the ‘rows’ of the image/array/raster. We’ll also generate our rotational profiles and parameters.\n\nimage_ra = Ra(image)\nimage_rms = Rms(image)\nrotational_profiles= gen_rot_prof(image)\nimage_rot_ra = Ra(rotational_profiles)\nimage_rot_rms = Rms(rotational_profiles)\n\nLet’s visualise them. First we’ll make some boxplots to look at the distribution and find any outliers\n\nplt.figure()\nplt.subplot(221)\nplt.boxplot(image_ra)\nplt.title('Image Ra')\n\nplt.subplot(222)\nplt.boxplot(image_rms)\nplt.title('Image Rms')\n\nplt.subplot(223)\nplt.boxplot(image_rot_ra)\nplt.title('Image Rotational Ra')\n\nplt.subplot(224)\nplt.boxplot(image_rot_rms)\nplt.title('Image Rotational Rms')\nplt.tight_layout()\n\nLet’s try a scatter plot, Ra/Rms against location of the profile and rotational Ra/Rms against degree\n\nplt.figure()\n\nplt.subplot(221)\nplt.scatter(range(len(image_ra)),image_ra)\nplt.title('Image Ra')\n\nplt.subplot(222)\nplt.scatter(range(len(image_rms)),image_rms)\nplt.title('Image Rms')\n\nplt.subplot(223)\nplt.scatter(range(len(image_rot_ra)),image_rot_ra)\nplt.title('Image Rotational Ra')\n\nplt.subplot(224)\nplt.scatter(range(len(image_rot_rms)),image_rot_rms)\nplt.title('Image Rotational Rms')\nplt.tight_layout()\n\nHow about plotting Ra against Rms?\n\nplt.figure()\nplt.subplot(121)\nplt.scatter(image_ra,image_rms)\nplt.title('Image Ra/Rms')\n\nplt.subplot(122)\nplt.scatter(image_rot_ra,image_rot_rms)\nplt.title('Image Rotational Ra/Rms')\n\nplt.tight_layout()",
+    "crumbs": [
+      "Examples"
+    ]
+  },
+  {
+    "objectID": "profile.html",
+    "href": "profile.html",
+    "title": "Profile",
+    "section": "",
+    "text": "To demonstrate, we’re going to build on the data we processed in data\nimage = np.loadtxt('example.txt')\nprofiles = np.loadtxt('example_profiles.txt')\nplt.imshow(image)\nplt.show()",
+    "crumbs": [
+      "Profile"
+    ]
+  },
+  {
+    "objectID": "profile.html#statistical-parameters",
+    "href": "profile.html#statistical-parameters",
+    "title": "Profile",
+    "section": "Statistical Parameters",
+    "text": "Statistical Parameters\nThe following methods are statistical in nature, providing a single number as a broad description of the distribution of the height values.\n\nsource\n\nRa\n\n Ra (im, axis=1, norm=True)\n\nCalculates Mean Absolute Roughness (Ra) along given axis. Defined as the average deviation of absolute height values from the mean line.\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nim\n\n\nNumpy array or arraylike\n\n\naxis\nint\n1\nDefault to Ra of rows\n\n\nnorm\nbool\nTrue\nNormalize the profile by subtracting the mean\n\n\n\n\n#test_close(0.14539179526852036,Ra(cor2pgau,norm=False,axis=None),eps=1e-4)\n\n\nRa(image)[:5]\n\narray([0.00042559, 0.00041652, 0.00040715, 0.00039409, 0.00037837])\n\n\nRemember, if you just want the parameters of a certain profile, you just index into your image and be mindful of the axis.\n\nfirst_row_profile    = image[0,:]\nfirst_column_profile = image[:,0]\nRa(first_column_profile, axis = 0)\n\n0.0004406996100199229\n\n\n\nsource\n\n\nRms\n\n Rms (im, axis=1, norm=True)\n\nCalculates Root Mean Square Roughness (Rms) along given axis. Defined as the root mean square of deviations of height from the mean line of a given profile.\nAlso known as Rq\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nim\n\n\nNumpy array or array like\n\n\naxis\nint\n1\nDefault to Rms of rows\n\n\nnorm\nbool\nTrue\nNormalize the profile by subtracting the mean\n\n\n\n\n#test_close(0.195597300779425,Rms(cor2pgau,axis=None),1e-3)\n\n\nRms(image)[:5]\n\narray([0.00053041, 0.0005153 , 0.0004984 , 0.00048217, 0.00046463])\n\n\n\nsource\n\n\nRsk\n\n Rsk (im, axis=1, norm=True, **kwargs)\n\nCalcultes the Skew (Rsk) along given axis. Thin wrapper around scipy.stats.skew with bias set to False\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nim\n\n\nNumpy array or array like\n\n\naxis\nint\n1\nDefault to Skew of rows\n\n\nnorm\nbool\nTrue\nNormalize the profile by subtracting the mean\n\n\nkwargs\n\n\n\n\n\n\n\n#test_close(1.094210880233907,Rsk(cor2pgau[50:-50],axis=None),1e-4)\n\n\nRsk(image)[:5]\n\narray([-0.33567068, -0.33327936, -0.33261958, -0.32251   , -0.28183241])\n\n\n\nsource\n\n\nRku\n\n Rku (im, axis=1, norm=True, **kwargs)\n\nCalculates the Kurtosis (Rku) along given axis. This wrapper around scipy.stats.kurtosis\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nim\n\n\nNumpy array or array like\n\n\naxis\nint\n1\nDefault to Kurtosis of rows\n\n\nnorm\nbool\nTrue\nNormalize the profile by subtracting the mean\n\n\nkwargs\n\n\n\n\n\n\n\n#test_close(6.8550747244379355,Rku(cor2pgau,axis=None),1e-4)\n\n\nRku(image)[:5]\n\narray([-0.65026388, -0.70209278, -0.75579608, -0.75657439, -0.73669875])\n\n\n\nsource\n\n\nRp\n\n Rp (im, axis=1, norm=True, **kwargs)\n\nCalculates the peak height of the profile.\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nim\n\n\nNumpy array or array like\n\n\naxis\nint\n1\nDefault to peaks of rows\n\n\nnorm\nbool\nTrue\nNormalize the profile by subtracting the mean\n\n\nkwargs\n\n\n\n\n\n\n\n#test_close(1.1930965342677724,Rp(cor2pgau,axis=None),1e-4)\n\n\nsource\n\n\nRv\n\n Rv (im, axis=1, norm=True, **kwargs)\n\nCalculates the absolute max valley depth of the profile.\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nim\n\n\nNumpy array or array like\n\n\naxis\nint\n1\nDefault to peaks of rows\n\n\nnorm\nbool\nTrue\nNormalize the profile by subtracting the mean\n\n\nkwargs\n\n\n\n\n\n\n\n#test_close(0.5760229498158181,Rv(cor2pgau,axis=None),1e-4)\n\n\nsource\n\n\nRz\n\n Rz (im, axis=1, norm=True, **kwargs)\n\nCalculates the maximum height (max height + absolute max depth) of the profile. Synonymous with range. Also called Rt\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nim\n\n\nNumpy array or array like\n\n\naxis\nint\n1\nDefault to peaks of rows\n\n\nnorm\nbool\nTrue\nNormalize the profile by subtracting the mean\n\n\nkwargs\n\n\n\n\n\n\n\n#test_close(1.7691194840835909,Rz(cor2pgau,axis=None),1e-4)\n\n\n## Texture Parameters\n\n\ndef local_max_min(im,\n                  axis = 1,\n                  norm = True,\n                  **kwargs\n                 ):\n    ''' \n    Returns the number of local maxima and minima per unit length, also known as the density of extremes from Nayak (1971).\n    Assumes the surface is random, with a gaussian distribution of heights (usually pretty safe). \n    '''\n    if norm:\n        im = im - np.mean(im, axis = axis, keepdims = True)\n    \n    m2 = moment(im, moment=2, axis = axis)\n    m4 = moment(im, moment=4, axis = axis)\n    return (1/math.pi) * ((m4/m2)**(1/2))\n\n\ndef Sds(im,\n        axis = 1,\n        norm = True,\n        **kwargs\n       ):\n    '''\n    Density of summits, as described by Nayak (1971).\n    Assumes gaussian, isotropic surface. \n    '''\n    m2 = moment(im, moment=2, axis = axis)\n    m4 = moment(im, moment=4, axis = axis)\n    \n    return (1 / (6 * math.pi * (3**(1/2)))) * (m4/m2)",
+    "crumbs": [
+      "Profile"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Rough",
+    "section": "",
+    "text": "Installation is simple via pip or cloning of this repository. Rough should integrate seamlessly with most workflows and projects. A python enviroment manager is generally recommended, I use conda.\npip install rough",
+    "crumbs": [
+      "Rough"
+    ]
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "Rough",
+    "section": "",
+    "text": "Installation is simple via pip or cloning of this repository. Rough should integrate seamlessly with most workflows and projects. A python enviroment manager is generally recommended, I use conda.\npip install rough",
+    "crumbs": [
+      "Rough"
+    ]
+  },
+  {
+    "objectID": "index.html#how-to-use",
+    "href": "index.html#how-to-use",
+    "title": "Rough",
+    "section": "How to use",
+    "text": "How to use\nRough is functional package which works on numpy arrays (or objects which can be coerced into arrays). This documentation follows a literate programming paradigm. The docs are the code base and full of examples. All sections are available as .ipynb notebooks and can be opened using your preferred notebook interface to work with your own data.\nCalculating the Ra on a simple line or Profile:\n\nimport rough.profile as profile\nline = [1,2,3,4,5,6,7]\nprofile.Ra(line, axis = 0)\n\n1.7142857142857142\n\n\nOr the Rms\n\nprofile.Rms(line, axis = 0)\n\n2.0\n\n\nCalculating the Sa on a simple 2D Area:\n\nimport rough.areal as areal\narea = [line]*7\nareal.Sa(area)\n\n1.7142857142857142\n\n\nOr the Sms\n\nareal.Sms(area)\n\n2.0",
+    "crumbs": [
+      "Rough"
+    ]
+  },
+  {
+    "objectID": "cli.html",
+    "href": "cli.html",
+    "title": "CLI",
+    "section": "",
+    "text": "array = np.loadtxt('example.txt')\narray.shape\n\n(501, 501)\n\n\n\n#TODO: Fix the list input, need to probably use params and nargs\n\n\nsource\n\nrough\n\n rough (fname:str=None, ext:str='.txt', result:str=None,\n        result_how:str='concat',\n        level:bool_arg&lt;Performplanelevelling&gt;=True,\n        form:bool_arg&lt;Removeformbypolynomialsubtraction&gt;=True, deg:int=3,\n        smooth:bool_arg&lt;Smootharraybyapplyinggaussian&gt;=True, sigma:int=1, \n        gen_rot:bool_arg&lt;Generaterotationalprofilesandapplyparametercalcul\n        ationtothem&gt;=True, gen_section:bool_arg&lt;Generatesub-\n        sectionsofthesurface&gt;=True, sec_how:str='square', sec_num:int=100,\n        profile:bool_arg&lt;Calculateprofileparameters&gt;=True,\n        section:bool_arg&lt;Calculatesectionparameters&gt;=True,\n        params1D:list=None, params2D:list=None)\n\nPerform parameter calculation on a given file or directory, if none is provided .\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nfname\nstr\nNone\nFile name, path or directory with data files to be read\n\n\next\nstr\n.txt\nExtension for the files .txt or .csv\n\n\nresult\nstr\nNone\nDirectory to write results to, if None, writes to ‘results’\n\n\nresult_how\nstr\nconcat\nHow to save the results, ‘concat’ concatenates all respective types of results (i.e. profile,section,rotational,subsection) into one dataframe file. ‘split’ produces respective result files for each input file. Use split for large amounts of data.\n\n\nlevel\nbool_arg \nTrue\nPerform plane levelling\n\n\nform\nbool_arg \nTrue\nRemove form by polynomial subtraction\n\n\ndeg\nint\n3\nDegree of polynomial to remove\n\n\nsmooth\nbool_arg \nTrue\nSmooth the array by applying a gaussian\n\n\nsigma\nint\n1\nSigma for gaussian to be applied\n\n\ngen_rot\nbool_arg \nTrue\nGenerate rotational profiles and apply parameter calculation to them\n\n\ngen_section\nbool_arg \nTrue\nGenerate sub-sections of the surface\n\n\nsec_how\nstr\nsquare\nType of section to generate, currently only supports ‘square’\n\n\nsec_num\nint\n100\nNumber of sections to generate\n\n\nprofile\nbool_arg \nTrue\nCalculate profile parameters\n\n\nsection\nbool_arg \nTrue\nCalculate section parameters\n\n\nparams1D\nlist\nNone\nlist of 1D parameters to calculate,\n\n\nparams2D\nlist\nNone\nlist of 2D parameters to calculate, calculates for both the sections and the whole",
+    "crumbs": [
+      "CLI"
+    ]
+  },
+  {
+    "objectID": "experiments.html",
+    "href": "experiments.html",
+    "title": "Experiments",
+    "section": "",
+    "text": "#skew(cor2pgau)\n#plt.plot(cor2pgau[:100])",
+    "crumbs": [
+      "Experiments"
+    ]
+  },
+  {
+    "objectID": "experiments.html#working-on-using-a-natural-cubic-spline-interpolation",
+    "href": "experiments.html#working-on-using-a-natural-cubic-spline-interpolation",
+    "title": "Experiments",
+    "section": "Working on using a natural cubic spline interpolation",
+    "text": "Working on using a natural cubic spline interpolation\ncortest = cor2pgau xvals = np.arange(0,len(cortest)) corspline = CubicSpline(xvals,cortest) plt.plot(xvals,cortest,‘o’) plt.plot(xvals,corspline(xvals)) plt.plot(np.arange(0,len(cortest),0.01),np.abs(corspline(np.arange(0,len(cortest),0.01))))\ncorvals = corspline(np.arange(0,len(cortest),0.1)) 100*(1 - ((np.amax(corvals) - np.amin(corvals))/2.3547816195993403)) #2.3547816195993403 Ref\nnp.amin(corspline(np.arange(0,100,0.01)))\nnp.arange(0, len(cor2pgau),1)\nfrom scipy.integrate import quad\nx = np.arange(0, len(cor2pgau)-500,1) y = cor2pgau[250:-250]",
+    "crumbs": [
+      "Experiments"
+    ]
+  }
+]
